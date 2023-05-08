@@ -2,7 +2,8 @@ import { Routes, Route, Link } from 'react-router-dom';
 import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import Streaming from './pages/Streaming';
-
+import { ColorModeContext, useMode } from './theme';
+import { CssBaseLine, ThemeProvider} from '@mui/material'
 
 function App() {
   return (
