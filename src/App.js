@@ -7,7 +7,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 
 import Topbar from './scenes/global/Topbar';
 import Sidebar from './scenes/global/Sidebar';
-import Dashboard from './pages/Dashboard';
+import Dashboard from './scenes/dashboard/index';
 // import Team from './pages/team';
 // import Invoices from './pages/invoices';
 // import Contacts from './pages/contacts';
