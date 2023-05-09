@@ -11,7 +11,7 @@ content {
 }
 
 .app {
-  display: flex;
+  display: block;
   position: relative;
 }
 
