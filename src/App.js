@@ -3,7 +3,9 @@ import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import Streaming from './pages/Streaming';
 import { ColorModeContext, useMode } from './theme';
-import { CssBaseLine, ThemeProvider } from '@mui/material';
+import { ThemeProvider } from '@mui/material';
+import CssBaseline from '@mui/material/CssBaseline';
+
 import Topbar from './scenes/global/Topbar';
 
 function App() {
@@ -13,7 +15,7 @@ function App() {
   return (
     <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
-        <CssBaseLine />
+        <CssBaseline />
         <div className="app">
           <main className='content'>
               <Topbar/>
