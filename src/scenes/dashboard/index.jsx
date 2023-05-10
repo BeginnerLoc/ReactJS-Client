@@ -10,11 +10,43 @@ import Header from "../../components/Header";
 import LineChart from "../../components/LineChart";
 import StatBox from "../../components/StatBox";
 
+import { useState, useEffect } from "react";
+import axios from 'axios';
 
+const URL = 'http://localhost:5000'
 
 const Dashboard = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
+  //retrieve data from Flask server
+
+  //today's no of breaches
+  const [todayBreaches, setTodayBreaches] = useState(0);
+  useEffect(() => {
+    axios.get( `${URL}/api/today_breaches`)
+      .then(response => {
+        console.log(response.data)
+        setTodayBreaches(response.data);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }, []);
+
+
+  //most breaches
+  const [mostBreaches, setMostBreaches] = useState({});
+  useEffect(() => {
+    axios.get( `${URL}/api/most_breaches`)
+      .then(response => {
+        setMostBreaches(JSON.parse(response.data));
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }, []);
+
 
   return (
     <Box m="20px">
@@ -54,7 +86,7 @@ const Dashboard = () => {
           justifyContent="center"
         >
           <StatBox
-            title="12,361"
+            title={todayBreaches.toString()}
             subtitle="Today's no of Breaches"
             icon={
               <ErrorOutlinedIcon
