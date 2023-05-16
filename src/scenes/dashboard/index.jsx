@@ -20,6 +20,11 @@ const Dashboard = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
+  const deadlineDate = new Date('7/20/2023');
+  const currentDate = new Date();
+  const timeDiff = Math.abs(currentDate.getTime() - deadlineDate.getTime());
+  const deadlineCount = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
   //retrieve data from Flask server
 
   //today's no of breaches
@@ -59,21 +64,21 @@ const Dashboard = () => {
         console.error(error);
         setCheckIn([
           {
-            txId: "1",
+            id: "1",
             name: 'Loc',
             role: "Construction Worker",
             date: "2021-09-01",
             validity: "True",
           },
           {
-            txId: "2",
+            id: "2",
             name: 'Astro',
             role: "Construction Worker",
             date: "2021-09-01",
             validity: "True",
           },
           {
-            txId: "3",
+            id: "3",
             name: 'Daren',
             role: "Construction Worker",
             date: "2021-09-01",
@@ -140,7 +145,7 @@ const Dashboard = () => {
           justifyContent="center"
         >
           <StatBox
-            title="431,225"
+            title="100"
             subtitle="Workers Working Today"
             icon={
               <EngineeringOutlinedIcon
@@ -157,7 +162,7 @@ const Dashboard = () => {
           justifyContent="center"
         >
           <StatBox
-            title="32,441"
+            title="50"
             subtitle="Number Of Hazards"
             icon={
               <DangerousIcon
@@ -174,7 +179,7 @@ const Dashboard = () => {
           justifyContent="center"
         >
           <StatBox
-            title="1,325,134"
+            title={deadlineCount}
             subtitle="Days To Project Deadline"
             icon={
               <EventOutlinedIcon
@@ -245,7 +250,7 @@ const Dashboard = () => {
           </Box>
           {checkIn.map((checkIn, i) => (
             <Box
-              key={`${checkIn.txId}-${i}`}
+              key={`${checkIn.id}-${i}`}
               display="flex"
               justifyContent="space-between"
               alignItems="center"
