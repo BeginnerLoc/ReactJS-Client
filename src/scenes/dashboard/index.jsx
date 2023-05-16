@@ -4,14 +4,15 @@ import { mockTransactions } from "../../data/mockData";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
 import ErrorOutlinedIcon from '@mui/icons-material/ErrorOutlined';
 import EngineeringOutlinedIcon from '@mui/icons-material/EngineeringOutlined';
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import TrafficIcon from "@mui/icons-material/Traffic";
+import EventOutlinedIcon from '@mui/icons-material/EventOutlined';
+import DangerousIcon from '@mui/icons-material/Dangerous';
 import Header from "../../components/Header";
 import LineChart from "../../components/LineChart";
 import StatBox from "../../components/StatBox";
 
 import { useState, useEffect } from "react";
 import axios from 'axios';
+
 
 const URL = 'http://localhost:5000'
 
@@ -46,6 +47,42 @@ const Dashboard = () => {
         console.error(error);
       });
   }, []);
+
+  //Live Check-in data
+  const [checkIn, setCheckIn] = useState([]);
+  useEffect(() => {
+    axios.get( `${URL}/api/check_in`)
+      .then(response => {
+        setCheckIn(JSON.parse(response.data));
+      })
+      .catch(error => {
+        console.error(error);
+        setCheckIn([
+          {
+            txId: "1",
+            name: 'Loc',
+            role: "Construction Worker",
+            date: "2021-09-01",
+            validity: "True",
+          },
+          {
+            txId: "2",
+            name: 'Astro',
+            role: "Construction Worker",
+            date: "2021-09-01",
+            validity: "True",
+          },
+          {
+            txId: "3",
+            name: 'Daren',
+            role: "Construction Worker",
+            date: "2021-09-01",
+            validity: "True",
+          }
+        ])
+      });
+  }, []);
+
 
 
   return (
@@ -87,7 +124,7 @@ const Dashboard = () => {
         >
           <StatBox
             title={todayBreaches.toString()}
-            subtitle="Today's no of Breaches"
+            subtitle="Today's No Of Breaches"
             icon={
               <ErrorOutlinedIcon
                 sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
@@ -121,9 +158,9 @@ const Dashboard = () => {
         >
           <StatBox
             title="32,441"
-            subtitle="New Clients"
+            subtitle="Number Of Hazards"
             icon={
-              <PersonAddIcon
+              <DangerousIcon
                 sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
               />
             }
@@ -138,9 +175,9 @@ const Dashboard = () => {
         >
           <StatBox
             title="1,325,134"
-            subtitle="Traffic Received"
+            subtitle="Days To Project Deadline"
             icon={
-              <TrafficIcon
+              <EventOutlinedIcon
                 sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
               />
             }
@@ -166,7 +203,7 @@ const Dashboard = () => {
                 fontWeight="600"
                 color={colors.grey[100]}
               >
-                Revenue Generated
+                Weekly number of breaches (7 days)
               </Typography>
               <Typography
                 variant="h3"
@@ -203,12 +240,12 @@ const Dashboard = () => {
             p="15px"
           >
             <Typography color={colors.grey[100]} variant="h5" fontWeight="600">
-              Recent Transactions
+              Live Check-in
             </Typography>
           </Box>
-          {mockTransactions.map((transaction, i) => (
+          {checkIn.map((checkIn, i) => (
             <Box
-              key={`${transaction.txId}-${i}`}
+              key={`${checkIn.txId}-${i}`}
               display="flex"
               justifyContent="space-between"
               alignItems="center"
@@ -221,19 +258,19 @@ const Dashboard = () => {
                   variant="h5"
                   fontWeight="600"
                 >
-                  {transaction.txId}
+                  {checkIn.name}
                 </Typography>
                 <Typography color={colors.grey[100]}>
-                  {transaction.user}
+                  {checkIn.role}
                 </Typography>
               </Box>
-              <Box color={colors.grey[100]}>{transaction.date}</Box>
+              <Box color={colors.grey[100]}>{checkIn.date}</Box>
               <Box
                 backgroundColor={colors.greenAccent[500]}
                 p="5px 10px"
                 borderRadius="4px"
               >
-                ${transaction.cost}
+                {checkIn.validity}
               </Box>
             </Box>
           ))}
