@@ -55,24 +55,19 @@ const Dashboard = () => {
 
   const handleDownload = () => {
     // Send a request to the server endpoint responsible for generating and serving the PDF
-    fetch('http://localhost:5000/download_pdf')
+    axios.get('http://localhost:5000/download_pdf', { responseType: 'blob' })
       .then(response => {
-        if (response.ok) {
-          response.blob().then(blob => {
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'Safety Report.pdf';
-            a.click();
-          });
-        } else {
-          console.error('Error generating the PDF report');
-        }
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Safety Report.pdf';
+        a.click();
       })
       .catch(error => {
         console.error('Error requesting the PDF report', error);
       });
   };
+  
   //Live Check-in data
   const [checkIn, setCheckIn] = useState([]);
   useEffect(() => {
