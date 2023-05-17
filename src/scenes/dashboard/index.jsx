@@ -4,8 +4,8 @@ import { mockTransactions } from "../../data/mockData";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
 import ErrorOutlinedIcon from '@mui/icons-material/ErrorOutlined';
 import EngineeringOutlinedIcon from '@mui/icons-material/EngineeringOutlined';
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import TrafficIcon from "@mui/icons-material/Traffic";
+import EventOutlinedIcon from '@mui/icons-material/EventOutlined';
+import DangerousIcon from '@mui/icons-material/Dangerous';
 import Header from "../../components/Header";
 import LineChart from "../../components/LineChart";
 import StatBox from "../../components/StatBox";
@@ -13,11 +13,17 @@ import StatBox from "../../components/StatBox";
 import { useState, useEffect, React } from "react";
 import axios from 'axios';
 
+
 const URL = 'http://localhost:5000'
 
 const Dashboard = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
+  const deadlineDate = new Date('7/20/2023');
+  const currentDate = new Date();
+  const timeDiff = Math.abs(currentDate.getTime() - deadlineDate.getTime());
+  const deadlineCount = Math.ceil(timeDiff / (1000 * 3600 * 24));
 
   //retrieve data from Flask server
 
@@ -67,6 +73,41 @@ const Dashboard = () => {
         console.error('Error requesting the PDF report', error);
       });
   };
+  //Live Check-in data
+  const [checkIn, setCheckIn] = useState([]);
+  useEffect(() => {
+    axios.get( `${URL}/api/check_in`)
+      .then(response => {
+        setCheckIn(JSON.parse(response.data));
+      })
+      .catch(error => {
+        console.error(error);
+        setCheckIn([
+          {
+            id: "1",
+            name: 'Loc',
+            role: "Construction Worker",
+            date: "2021-09-01",
+            validity: "True",
+          },
+          {
+            id: "2",
+            name: 'Astro',
+            role: "Construction Worker",
+            date: "2021-09-01",
+            validity: "True",
+          },
+          {
+            id: "3",
+            name: 'Daren',
+            role: "Construction Worker",
+            date: "2021-09-01",
+            validity: "True",
+          }
+        ])
+      });
+  }, []);
+
 
 
   return (
@@ -109,7 +150,7 @@ const Dashboard = () => {
         >
           <StatBox
             title={todayBreaches.toString()}
-            subtitle="Today's no of Breaches"
+            subtitle="Today's No Of Breaches"
             icon={
               <ErrorOutlinedIcon
                 sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
@@ -125,7 +166,7 @@ const Dashboard = () => {
           justifyContent="center"
         >
           <StatBox
-            title="431,225"
+            title="100"
             subtitle="Workers Working Today"
             icon={
               <EngineeringOutlinedIcon
@@ -142,10 +183,10 @@ const Dashboard = () => {
           justifyContent="center"
         >
           <StatBox
-            title="32,441"
-            subtitle="New Clients"
+            title="50"
+            subtitle="Number Of Hazards"
             icon={
-              <PersonAddIcon
+              <DangerousIcon
                 sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
               />
             }
@@ -159,10 +200,10 @@ const Dashboard = () => {
           justifyContent="center"
         >
           <StatBox
-            title="1,325,134"
-            subtitle="Traffic Received"
+            title={deadlineCount}
+            subtitle="Days To Project Deadline"
             icon={
-              <TrafficIcon
+              <EventOutlinedIcon
                 sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
               />
             }
@@ -188,14 +229,14 @@ const Dashboard = () => {
                 fontWeight="600"
                 color={colors.grey[100]}
               >
-                Revenue Generated
+                Weekly number of breaches (7 days)
               </Typography>
               <Typography
                 variant="h3"
                 fontWeight="bold"
                 color={colors.greenAccent[500]}
               >
-                $59,342.32
+               17
               </Typography>
             </Box>
             <Box>
@@ -225,12 +266,12 @@ const Dashboard = () => {
             p="15px"
           >
             <Typography color={colors.grey[100]} variant="h5" fontWeight="600">
-              Recent Transactions
+              Live Check-in
             </Typography>
           </Box>
-          {mockTransactions.map((transaction, i) => (
+          {checkIn.map((checkIn, i) => (
             <Box
-              key={`${transaction.txId}-${i}`}
+              key={`${checkIn.id}-${i}`}
               display="flex"
               justifyContent="space-between"
               alignItems="center"
@@ -243,19 +284,19 @@ const Dashboard = () => {
                   variant="h5"
                   fontWeight="600"
                 >
-                  {transaction.txId}
+                  {checkIn.name}
                 </Typography>
                 <Typography color={colors.grey[100]}>
-                  {transaction.user}
+                  {checkIn.role}
                 </Typography>
               </Box>
-              <Box color={colors.grey[100]}>{transaction.date}</Box>
+              <Box color={colors.grey[100]}>{checkIn.date}</Box>
               <Box
                 backgroundColor={colors.greenAccent[500]}
                 p="5px 10px"
                 borderRadius="4px"
               >
-                ${transaction.cost}
+                {checkIn.validity}
               </Box>
             </Box>
           ))}
