@@ -10,7 +10,7 @@ import Header from "../../components/Header";
 import LineChart from "../../components/LineChart";
 import StatBox from "../../components/StatBox";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, React } from "react";
 import axios from 'axios';
 
 const URL = 'http://localhost:5000'
@@ -47,6 +47,27 @@ const Dashboard = () => {
       });
   }, []);
 
+  const handleDownload = () => {
+    // Send a request to the server endpoint responsible for generating and serving the PDF
+    fetch('http://localhost:5000/download_pdf')
+      .then(response => {
+        if (response.ok) {
+          response.blob().then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Safety Report.pdf';
+            a.click();
+          });
+        } else {
+          console.error('Error generating the PDF report');
+        }
+      })
+      .catch(error => {
+        console.error('Error requesting the PDF report', error);
+      });
+  };
+
 
   return (
     <Box m="20px">
@@ -63,6 +84,7 @@ const Dashboard = () => {
               fontWeight: "bold",
               padding: "10px 20px",
             }}
+            onClick={handleDownload}
           >
             <DownloadOutlinedIcon sx={{ mr: "10px" }} />
             Download Reports
