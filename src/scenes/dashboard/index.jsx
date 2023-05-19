@@ -253,14 +253,14 @@ const Dashboard = () => {
                 fontWeight="600"
                 color={colors.grey[100]}
               >
-                Top Weekly Breaches:
+                Top Weekly Breaches: 
               </Typography>
               <Typography
                 variant="h3"
                 fontWeight="bold"
                 color={colors.greenAccent[500]}
               >
-              {mostFrequentBreaches[0]}
+              {mostFrequentBreaches[0]} - {breachesCount}
               </Typography>
             </Box>
             <Box>
