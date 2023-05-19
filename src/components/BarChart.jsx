@@ -1,15 +1,121 @@
 import { useTheme } from "@mui/material";
 import { ResponsiveBar } from "@nivo/bar";
 import { tokens } from "../theme";
-import { mockBarData as data } from "../data/mockData";
+// import { mockBarData as data } from "../data/mockData";
+
+import { useState, useEffect, React } from "react";
+import axios from 'axios';
+
+const URL = 'http://localhost:5000'
 
 const BarChart = ({ isDashboard = false }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
+
+  const [breachesCount, setBreachesCount] = useState(0);
+  const [mostFrequentBreaches, setMostFrequentBreaches] = useState([]);
+  const [graph, setGraph] = useState([]);
+  useEffect(() => {
+    axios.get( `${URL}/api/graph_breaches`)
+        .then(response => {
+          const data = response.data;
+          
+          // Count the most frequent breaches
+          const breachCounts = {};
+          data.forEach(breach => {
+            const description = breach.description;
+            breachCounts[description] = (breachCounts[description] || 0) + 1;
+          });
+
+          // Sort the breaches by count in descending order
+          const sortedBreaches = Object.entries(breachCounts).sort((a, b) => b[1] - a[1]);
+
+          // Set the breaches count and most frequent breaches state variables
+          setBreachesCount(data.length);
+          setMostFrequentBreaches(sortedBreaches);
+
+          // Create a Set to store unique worker names
+          const uniqueWorkerNames = new Set();
+
+          // Iterate over the breaches and add worker names to the Set
+          data.forEach((breach) => {
+            const workerName = breach.worker_name;
+            uniqueWorkerNames.add(workerName);
+          });
+
+          // Convert the Set to an array of unique worker names
+          const uniqueWorkerNamesArray = Array.from(uniqueWorkerNames);
+
+          // Access the breaches count and description based on worker name
+          const breachesByWorker = uniqueWorkerNamesArray.map(workerName => {
+            const count = data.filter(breach => breach.worker_name === workerName).length;
+            const descriptions = data
+              .filter(breach => breach.worker_name === workerName)
+              .reduce((acc, breach) => {
+                acc[breach.description] = (acc[breach.description] || 0) + 1;
+                return acc;
+              }, {});
+            return { workerName, count, descriptions };
+          });
+          const sortedBreachesByWorker = breachesByWorker.sort((a, b) => a.count - b.count);
+
+          setGraph([
+            {
+              country: breachesByWorker[0].workerName,
+              [Object.keys(breachesByWorker[0].descriptions)[0]]: breachesByWorker[0].descriptions["No Helmet"],
+              "hot dogColor": "hsl(229, 70%, 50%)",
+              [Object.keys(breachesByWorker[0].descriptions)[1]]: breachesByWorker[0].descriptions["No Safety Vest"],
+              burgerColor: "hsl(111, 70%, 50%)",
+              [Object.keys(breachesByWorker[0].descriptions)[2]]: breachesByWorker[0].descriptions["No Ear Muffs"],
+              kebabColor: "hsl(273, 70%, 50%)",
+              [Object.keys(breachesByWorker[0].descriptions)[3]]: breachesByWorker[0].descriptions["No Gloves"],
+              donutColor: "hsl(275, 70%, 50%)",
+            },
+            {
+              country: breachesByWorker[1].workerName,
+              [Object.keys(breachesByWorker[1].descriptions)[0]]: breachesByWorker[1].descriptions["No Helmet"],
+              "hot dogColor": "hsl(229, 70%, 50%)",
+              [Object.keys(breachesByWorker[1].descriptions)[1]]: breachesByWorker[1].descriptions["No Safety Vest"],
+              burgerColor: "hsl(111, 70%, 50%)",
+              [Object.keys(breachesByWorker[1].descriptions)[2]]: breachesByWorker[1].descriptions["No Ear Muffs"],
+              kebabColor: "hsl(273, 70%, 50%)",
+              [Object.keys(breachesByWorker[1].descriptions)[3]]: breachesByWorker[1].descriptions["No Gloves"],
+              donutColor: "hsl(275, 70%, 50%)",
+            },
+            {
+              country: breachesByWorker[2].workerName,
+              [Object.keys(breachesByWorker[2].descriptions)[0]]: breachesByWorker[2].descriptions["No Helmet"],
+              "hot dogColor": "hsl(229, 70%, 50%)",
+              [Object.keys(breachesByWorker[2].descriptions)[1]]: breachesByWorker[2].descriptions["No Safety Vest"],
+              burgerColor: "hsl(111, 70%, 50%)",
+              [Object.keys(breachesByWorker[2].descriptions)[2]]: breachesByWorker[2].descriptions["No Ear Muffs"],
+              kebabColor: "hsl(273, 70%, 50%)",
+              [Object.keys(breachesByWorker[2].descriptions)[3]]: breachesByWorker[2].descriptions["No Gloves"],
+              donutColor: "hsl(275, 70%, 50%)",
+            },
+            {
+              country: breachesByWorker[3].workerName,
+              [Object.keys(breachesByWorker[3].descriptions)[0]]: breachesByWorker[3].descriptions["No Helmet"],
+              "hot dogColor": "hsl(229, 70%, 50%)",
+              [Object.keys(breachesByWorker[3].descriptions)[1]]: breachesByWorker[3].descriptions["No Safety Vest"],
+              burgerColor: "hsl(111, 70%, 50%)",
+              [Object.keys(breachesByWorker[3].descriptions)[2]]: breachesByWorker[3].descriptions["No Ear Muffs"],
+              kebabColor: "hsl(273, 70%, 50%)",
+              [Object.keys(breachesByWorker[3].descriptions)[3]]: breachesByWorker[3].descriptions["No Gloves"],
+              donutColor: "hsl(275, 70%, 50%)",
+            },
+          ]);
+        })
+      .catch(error => {
+      console.error(error);
+      });
+  }, []);
+
   return (
     <ResponsiveBar
-      data={data}
+      data={graph}
+      layout="horizontal"
       theme={{
         // added
         axis: {
@@ -39,7 +145,8 @@ const BarChart = ({ isDashboard = false }) => {
           },
         },
       }}
-      keys={["hot dog", "burger", "sandwich", "kebab", "fries", "donut"]}
+      //keys={["hot dog", "burger", "kebab", "donut"]}
+      keys={mostFrequentBreaches.map(([description, count]) => description)}
       indexBy="country"
       margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
       padding={0.3}

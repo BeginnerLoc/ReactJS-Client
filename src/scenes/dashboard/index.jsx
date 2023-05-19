@@ -1,17 +1,16 @@
 import { Box, Button, IconButton, Typography, useTheme } from "@mui/material";
 import { tokens } from "../../theme";
-import { mockTransactions } from "../../data/mockData";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
 import ErrorOutlinedIcon from '@mui/icons-material/ErrorOutlined';
 import EngineeringOutlinedIcon from '@mui/icons-material/EngineeringOutlined';
 import EventOutlinedIcon from '@mui/icons-material/EventOutlined';
 import DangerousIcon from '@mui/icons-material/Dangerous';
 import Header from "../../components/Header";
-import LineChart from "../../components/LineChart";
 import StatBox from "../../components/StatBox";
 
 import { useState, useEffect, React } from "react";
 import axios from 'axios';
+import BarChart from "../../components/BarChart";
 
 
 const URL = 'http://localhost:5000'
@@ -108,7 +107,36 @@ const Dashboard = () => {
       });
   }, []);
 
+  const [breachesCount, setBreachesCount] = useState(0);
+  const [mostFrequentBreaches, setMostFrequentBreaches] = useState([]);
+  
+  useEffect(() => {
+    axios.get(`${URL}/api/graph_breaches`)
+      .then(response => {
+        const data = response.data;
+  
+        // Count the most frequent breaches
+        const breachCounts = {};
+        data.forEach(breach => {
+          const description = breach.description;
+          breachCounts[description] = (breachCounts[description] || 0) + 1;
+        });
+  
+        // Sort the breaches by count in descending order
+        const sortedBreaches = Object.entries(breachCounts).sort((a, b) => b[1] - a[1]);
+  
+        // Get the description names of the most frequent breaches
+        const mostFrequentDescriptionNames = sortedBreaches.map(entry => entry[0]);
+  
+        // Set the breaches count and most frequent breaches state variables
+        setBreachesCount(data.length);
+        setMostFrequentBreaches(mostFrequentDescriptionNames);
 
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }, []);
 
   return (
     <Box m="20px">
@@ -211,6 +239,7 @@ const Dashboard = () => {
         </Box>
 
         {/* ROW 2 */}
+        {/* Graph */}
         <Box
           gridColumn="span 8"
           gridRow="span 2"
@@ -229,14 +258,14 @@ const Dashboard = () => {
                 fontWeight="600"
                 color={colors.grey[100]}
               >
-                Weekly number of breaches (7 days)
+                Top Weekly Breaches:
               </Typography>
               <Typography
                 variant="h3"
                 fontWeight="bold"
                 color={colors.greenAccent[500]}
               >
-               17
+              {mostFrequentBreaches[0]}
               </Typography>
             </Box>
             <Box>
@@ -248,9 +277,11 @@ const Dashboard = () => {
             </Box>
           </Box>
           <Box height="250px" m="-20px 0 0 0">
-            <LineChart isDashboard={true} />
+            <BarChart isDashboard={true}/>
           </Box>
         </Box>
+
+        {/* Live Check-in */}
         <Box
           gridColumn="span 4"
           gridRow="span 2"
