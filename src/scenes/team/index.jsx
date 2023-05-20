@@ -28,7 +28,7 @@ const Team = () => {
 
   useEffect(() => {
     axios
-      .get(`${URL}/api/all_workers`)
+      .get(`${URL}/api/all_workers`) 
       .then((workersResponse) => {
         const workersData = workersResponse.data;
 
