@@ -65,7 +65,7 @@ const Team = () => {
                 worker_id: worker.worker_id,
                 name: worker.name,
                 position: worker.position,
-                supervisor: worker.supervisor,
+                supervisor: worker.supervisor, 
                 breach: "",
                 time: "",
                 id: `no-breach-${uniqueIdCounter}`, // Assign a unique identifier for rows without breaches
