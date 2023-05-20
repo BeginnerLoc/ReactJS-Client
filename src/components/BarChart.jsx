@@ -146,7 +146,8 @@ const BarChart = ({ isDashboard = false }) => {
         },
       }}
       //keys={["hot dog", "burger", "kebab", "donut"]}
-      keys={mostFrequentBreaches.map(([description, count]) => description)}
+      //Shows the 0-6 Options
+      keys={(([...keys]) => keys.slice(0, 6))(mostFrequentBreaches.map(([description, count]) => description))}
       indexBy="country"
       margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
       padding={0.3}
