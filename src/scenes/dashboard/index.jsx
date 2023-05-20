@@ -6,11 +6,12 @@ import EngineeringOutlinedIcon from '@mui/icons-material/EngineeringOutlined';
 import EventOutlinedIcon from '@mui/icons-material/EventOutlined';
 import DangerousIcon from '@mui/icons-material/Dangerous';
 import Header from "../../components/Header";
-import StatBox from "../../components/StatBox";
-
+import StatBox from "../../components/StatBox"
 import { useState, useEffect, React } from "react";
 import axios from 'axios';
 import BarChart from "../../components/BarChart";
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';;
 
 
 const URL = 'http://localhost:5000'
@@ -51,10 +52,16 @@ const Dashboard = () => {
         console.error(error);
       });
   }, []);
+  
 
+  const [reportType, setReportType] = useState('');
+  const [days, setDays] = useState('');  
   const handleDownload = () => {
     // Send a request to the server endpoint responsible for generating and serving the PDF
-    axios.get('http://localhost:5000/download_pdf', { responseType: 'blob' })
+    const url = `${URL}/download_pdf?report_type=${reportType}&days=${days}`;
+  
+    axios
+      .get(url, { responseType: 'blob' })
       .then(response => {
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const a = document.createElement('a');
@@ -65,7 +72,7 @@ const Dashboard = () => {
       .catch(error => {
         console.error('Error requesting the PDF report', error);
       });
-  };
+  };  
   
   //Live Check-in data
   const [checkIn, setCheckIn] = useState([]);
@@ -138,21 +145,39 @@ const Dashboard = () => {
       {/* HEADER */}
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Header title="DASHBOARD" subtitle="Welcome to your dashboard" />
-
+  
         <Box>
-          <Button
+          <Select
+            value={reportType}
+            onChange={(e) => setReportType(e.target.value)}
+            sx={{ ml: '10px' }}
+          >
+            <MenuItem value="incidents">Incidents Only</MenuItem>
+            <MenuItem value="breaches">Breaches Only</MenuItem>
+          </Select>
+          <Select
+            value={days}
+            onChange={(e) => setDays(e.target.value)}
+            sx={{ ml: '10px' }}
+          >
+            <MenuItem value={1}>Last 1 Days</MenuItem>
+            <MenuItem value={2}>Last 2 Days</MenuItem>
+            <MenuItem value={31}>Last 31 Days</MenuItem>
+          </Select>
+        <Button
             sx={{
               backgroundColor: colors.blueAccent[700],
               color: colors.grey[100],
-              fontSize: "14px",
-              fontWeight: "bold",
-              padding: "10px 20px",
+              fontSize: '14px',
+              fontWeight: 'bold',
+              padding: '10px 20px',
+              ml: '10px'
             }}
             onClick={handleDownload}
           >
-            <DownloadOutlinedIcon sx={{ mr: "10px" }} />
+            <DownloadOutlinedIcon sx={{ mr: '10px' }} />
             Download Reports
-          </Button>
+        </Button>
         </Box>
       </Box>
 
