@@ -63,7 +63,7 @@ const Team = () => {
             } else {
               rowsWithBreaches.push({
                 worker_id: worker.worker_id,
-                name: worker.name,
+                name: worker.name, 
                 position: worker.position,
                 supervisor: worker.supervisor,   
                 breach: "",
