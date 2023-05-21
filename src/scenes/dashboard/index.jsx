@@ -1,4 +1,4 @@
-import { Box, Button, IconButton, Typography, useTheme } from "@mui/material";
+import { Box, Button, IconButton, Typography, useTheme, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import { tokens } from "../../theme";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
 import ErrorOutlinedIcon from '@mui/icons-material/ErrorOutlined';
@@ -7,11 +7,11 @@ import EventOutlinedIcon from '@mui/icons-material/EventOutlined';
 import DangerousIcon from '@mui/icons-material/Dangerous';
 import Header from "../../components/Header";
 import StatBox from "../../components/StatBox"
-import { useState, useEffect, React } from "react";
+import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import BarChart from "../../components/BarChart";
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';;
+// import MenuItem from '@mui/material/MenuItem';
+// import Select from '@mui/material/Select';;
 
 
 const URL = 'http://localhost:5000'
@@ -53,13 +53,14 @@ const Dashboard = () => {
       });
   }, []);
   
-
+  
+  const [showDropdowns, setShowDropdowns] = React.useState(false);
   const [reportType, setReportType] = useState('');
   const [days, setDays] = useState('');  
   const handleDownload = () => {
+    setShowDropdowns(true);
     // Send a request to the server endpoint responsible for generating and serving the PDF
     const url = `${URL}/download_pdf?report_type=${reportType}&days=${days}`;
-  
     axios
       .get(url, { responseType: 'blob' })
       .then(response => {
@@ -145,43 +146,54 @@ const Dashboard = () => {
       {/* HEADER */}
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Header title="DASHBOARD" subtitle="Welcome to your dashboard" />
-  
-        <Box>
-          <Select
-            value={reportType}
-            onChange={(e) => setReportType(e.target.value)}
-            sx={{ ml: '10px' }}
-          >
-            <MenuItem value="incidents">Incidents Only</MenuItem>
-            <MenuItem value="breaches">Breaches Only</MenuItem>
-          </Select>
-          <Select
-            value={days}
-            onChange={(e) => setDays(e.target.value)}
-            sx={{ ml: '10px' }}
-          >
-            <MenuItem value={1}>Last 1 Days</MenuItem>
-            <MenuItem value={2}>Last 2 Days</MenuItem>
-            <MenuItem value={31}>Last 31 Days</MenuItem>
-          </Select>
-        <Button
-            sx={{
-              backgroundColor: colors.blueAccent[700],
-              color: colors.grey[100],
-              fontSize: '14px',
-              fontWeight: 'bold',
-              padding: '10px 20px',
-              ml: '10px'
-            }}
-            onClick={handleDownload}
-          >
-            <DownloadOutlinedIcon sx={{ mr: '10px' }} />
-            Download Reports
-        </Button>
-        </Box>
-      </Box>
+        <Box display="flex" alignItems="center">
+        {/* Dropdown Boxes */}
+        {showDropdowns && (
+          <Box display="flex" alignItems="center">
+            <Typography variant="body1" sx={{ color: colors.grey[100], marginRight: '10px' }}>
+              Report Type:
+            </Typography>
+            <Select
+              value={reportType}
+              onChange={(e) => setReportType(e.target.value)}
+              sx={{ marginRight: '10px' }}
+            >
+              <MenuItem value="incidents">Incidents Only</MenuItem>
+              <MenuItem value="breaches">Breaches Only</MenuItem>
+            </Select>
+            <Typography
+              variant="body1"
+              sx={{ color: colors.grey[100], marginRight: '10px' }}
+            >
+              Days:
+            </Typography>
+            <Select value={days} onChange={(e) => setDays(e.target.value)} sx={{ marginRight: '10px' }}>
+              <MenuItem value={3}>Last 3 Day</MenuItem>
+              <MenuItem value={7}>Last 7 Days</MenuItem>
+              <MenuItem value={31}>Last 31 Days</MenuItem>
+            </Select>
+          </Box>
+        )}
 
-      {/* GRID & CHARTS */}
+        {/* Download Reports Button */}
+        <Button
+          sx={{
+            backgroundColor: colors.blueAccent[700],
+            color: colors.grey[100],
+            fontSize: '14px',
+            fontWeight: 'bold',
+            padding: '10px 20px',
+            marginLeft: 'auto',
+          }}
+          onClick={handleDownload}
+        >
+          <DownloadOutlinedIcon sx={{ mr: '10px' }} />
+          Download Reports
+        </Button>
+      </Box>
+    </Box>
+
+    {/* GRID & CHARTS */}
       <Box
         display="grid"
         gridTemplateColumns="repeat(12, 1fr)"
@@ -287,13 +299,6 @@ const Dashboard = () => {
               >
               {mostFrequentBreaches[0]} - {breachesCount}
               </Typography>
-            </Box>
-            <Box>
-              <IconButton>
-                <DownloadOutlinedIcon
-                  sx={{ fontSize: "26px", color: colors.greenAccent[500] }}
-                />
-              </IconButton>
             </Box>
           </Box>
           <Box height="250px" m="-20px 0 0 0">
