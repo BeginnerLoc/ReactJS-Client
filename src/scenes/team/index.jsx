@@ -103,7 +103,7 @@ const Team = () => {
 
   return (
     <Box m="20px">
-      <Header title="Breaches" subtitle="Managing the Team Members" />
+      <Header title="Breaches" subtitle="Managing the Workers" />
       <Box>
         <Typography variant="subtitle1">Filter by Name:</Typography>
         <select value={selectedFilter} onChange={handleFilterChange}>
@@ -117,7 +117,7 @@ const Team = () => {
       </Box>
       <Box
         m="40px 0 0 0"
-        height="65vh"
+        height="55vh"
         sx={{
           "& .MuiDataGrid-root": {
             border: "none",

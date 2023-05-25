@@ -39,6 +39,19 @@ const Dashboard = () => {
       });
   }, []);
 
+    //today's number of breaches
+    const [todayCheckin, setTodayCheckin] = useState(0);
+    useEffect(() => {
+      axios.get(`${URL}/api/num_check_in`)
+        .then(response => {
+          console.log(response.data);
+          setTodayCheckin(response.data.num_check_ins);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    }, []);
+
 
   //most breaches
   const [mostBreaches, setMostBreaches] = useState({});
@@ -131,7 +144,7 @@ const Dashboard = () => {
       .catch(error => {
         console.error(error);
       });
-  }, []);
+  }, []); 
 
   return (
     <Box m="20px">
@@ -189,7 +202,7 @@ const Dashboard = () => {
           justifyContent="center"
         >
           <StatBox
-            title="100"
+            title={todayCheckin.toString()}
             subtitle="Workers Working Today"
             icon={
               <EngineeringOutlinedIcon
