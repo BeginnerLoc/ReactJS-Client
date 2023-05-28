@@ -25,10 +25,11 @@ const Team = () => {
   const [selectedFilter, setSelectedFilter] = useState("");
   const [filteredWorkerDetails, setFilteredWorkerDetails] = useState([]);
   const [uniqueNames, setUniqueNames] = useState([]);
+  const [selectedDateFilter, setSelectedDateFilter] = useState("");
 
   useEffect(() => {
     axios
-      .get(`${URL}/api/all_workers`)  
+      .get(`${URL}/api/all_workers`)
       .then((workersResponse) => {
         const workersData = workersResponse.data;
 
@@ -37,68 +38,113 @@ const Team = () => {
         setUniqueNames(names);
 
         axios
-        .get(`${URL}/api/indiv_breaches`)
-        .then((breachesResponse) => {
-          const breachesData = JSON.parse(breachesResponse.data);
-      
-          // Create separate rows for workers with breaches
-          const rowsWithBreaches = [];
-          let uniqueIdCounter = 1; // Initialize a counter for unique identifiers
-          workersData.forEach((worker) => {
-            const workerBreaches = breachesData.filter(
-              (breach) => breach.worker_name === worker.name
-            );
-            if (workerBreaches.length > 0) {
-              workerBreaches.forEach((breach) => {
+          .get(`${URL}/api/indiv_breaches`) 
+          .then((breachesResponse) => {
+            const breachesData = JSON.parse(breachesResponse.data);
+
+            // Create separate rows for workers with breaches
+            const rowsWithBreaches = [];
+            let uniqueIdCounter = 1; // Initialize a counter for unique identifiers
+            workersData.forEach((worker) => {
+              const workerBreaches = breachesData.filter(
+                (breach) => breach.worker_name === worker.name
+              );
+              if (workerBreaches.length > 0) {
+                workerBreaches.forEach((breach) => {
+                  rowsWithBreaches.push({
+                    worker_id: worker.worker_id,
+                    name: worker.name,
+                    position: worker.position,
+                    supervisor: worker.supervisor,
+                    breach: breach.description,
+                    time: breach.datetime,
+                    id: `${worker.worker_id}-${breach._id}`, // Assign unique identifier using worker_id and breach _id
+                  });
+                });
+              } else {
                 rowsWithBreaches.push({
                   worker_id: worker.worker_id,
                   name: worker.name,
                   position: worker.position,
                   supervisor: worker.supervisor,
-                  breach: breach.description,
-                  time: breach.datetime,
-                  id: `${worker.worker_id}-${breach._id}`, // Assign unique identifier using worker_id and breach _id
+                  breach: "",
+                  time: "",
+                  id: `no-breach-${uniqueIdCounter}`, // Assign a unique identifier for rows without breaches
                 });
-              });
-            } else {
-              rowsWithBreaches.push({
-                worker_id: worker.worker_id,
-                name: worker.name, 
-                position: worker.position,
-                supervisor: worker.supervisor,   
-                breach: "",
-                time: "",
-                id: `no-breach-${uniqueIdCounter}`, // Assign a unique identifier for rows without breaches
-              });
-              uniqueIdCounter++; // Increment the uniqueIdCounter for each row without breaches
-            }
+                uniqueIdCounter++; // Increment the uniqueIdCounter for each row without breaches
+              }
+            });
+
+            setWorkerDetails(rowsWithBreaches);
+            setFilteredWorkerDetails(rowsWithBreaches);
+          })
+          .catch((error) => {
+            console.error(error);
           });
-      
-          setWorkerDetails(rowsWithBreaches);
-          setFilteredWorkerDetails(rowsWithBreaches);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
       })
       .catch((error) => {
         console.error(error);
       });
   }, []);
 
+  useEffect(() => {
+    let filteredData = workerDetails;
+
+    // Apply name filter
+    if (selectedFilter !== "") {
+      filteredData = filteredData.filter(
+        (worker) => worker.name === selectedFilter
+      );
+    }
+
+    // Apply date filters
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set the time to the start of the day
+
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    sevenDaysAgo.setHours(0, 0, 0, 0); // Set the time to the start of the day
+
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    startOfMonth.setHours(0, 0, 0, 0); // Set the time to the start of the day
+
+    if (selectedDateFilter === "today") {
+      filteredData = filteredData.filter(
+        (worker) => new Date(worker.time) >= today
+      );
+    } else if (selectedDateFilter === "sevenDays") {
+      filteredData = filteredData.filter(
+        (worker) => new Date(worker.time) >= sevenDaysAgo
+      );
+    } else if (selectedDateFilter === "month") {
+      filteredData = filteredData.filter(
+        (worker) => new Date(worker.time) >= startOfMonth
+      );
+    }
+
+    setFilteredWorkerDetails(filteredData);
+  }, [selectedFilter, selectedDateFilter, workerDetails]);
+
   const handleFilterChange = (event) => {
-    setSelectedFilter(event.target.value);
+    const selectedValue = event.target.value;
+    setSelectedFilter(selectedValue);
 
     // Filter the worker details based on the selected name
-    if (event.target.value !== "") {
+    if (selectedValue !== "") {
       const filteredData = workerDetails.filter(
-        (worker) => worker.name === event.target.value
+        (worker) => worker.name === selectedValue
       );
       setFilteredWorkerDetails(filteredData);
     } else {
       // If no filter is selected, show all worker details
       setFilteredWorkerDetails(workerDetails);
     }
+  };
+
+  const handleDateFilterChange = (event) => {
+    const selectedValue = event.target.value;
+    setSelectedDateFilter(selectedValue);
   };
 
   return (
@@ -113,6 +159,13 @@ const Team = () => {
               {name}
             </option>
           ))}
+        </select>
+        <Typography variant="subtitle1">Filter by Date:</Typography>
+        <select value={selectedDateFilter} onChange={handleDateFilterChange}>
+          <option value="">All</option>
+          <option value="today">Today</option>
+          <option value="sevenDays">Last 7 Days</option>
+          <option value="month">This Month</option>
         </select>
       </Box>
       <Box
@@ -145,9 +198,11 @@ const Team = () => {
         }}
       >
         <DataGrid
-          checkboxSelection
           rows={filteredWorkerDetails}
           columns={columns}
+          pageSize={10}
+          rowsPerPageOptions={[10]} 
+          disableSelectionOnClick
         />
       </Box>
     </Box>

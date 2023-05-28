@@ -20,7 +20,7 @@ const Dashboard = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
-  const deadlineDate = new Date('7/20/2023');
+  const deadlineDate = new Date('8/8/2023');
   const currentDate = new Date();
   const timeDiff = Math.abs(currentDate.getTime() - deadlineDate.getTime());
   const deadlineCount = Math.ceil(timeDiff / (1000 * 3600 * 24));
@@ -96,7 +96,7 @@ const Dashboard = () => {
         setCheckIn(JSON.parse(response.data));
       })
       .catch(error => {
-        console.error(error);
+        console.error(error); 
         setCheckIn([
           {
             id: "1",
