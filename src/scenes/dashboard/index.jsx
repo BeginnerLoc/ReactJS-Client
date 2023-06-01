@@ -88,40 +88,40 @@ const Dashboard = () => {
       });
   };  
   
-  //Live Check-in data
+  // //Live Check-in data
   const [checkIn, setCheckIn] = useState([]);
-  useEffect(() => {
-    axios.get( `${URL}/api/check_in`)
-      .then(response => {
-        setCheckIn(JSON.parse(response.data));
-      })
-      .catch(error => {
-        console.error(error); 
-        setCheckIn([
-          {
-            id: "1",
-            name: 'Loc',
-            role: "Construction Worker",
-            date: "2021-09-01",
-            validity: "True",
-          },
-          {
-            id: "2",
-            name: 'Astro',
-            role: "Construction Worker",
-            date: "2021-09-01",
-            validity: "True",
-          },
-          {
-            id: "3",
-            name: 'Daren',
-            role: "Construction Worker",
-            date: "2021-09-01",
-            validity: "True",
-          }
-        ])
-      });
-  }, []);
+  // useEffect(() => {
+  //   axios.get( `${URL}/api/check_in`)
+  //     .then(response => {
+  //       setCheckIn(JSON.parse(response.data));
+  //     })
+  //     .catch(error => {
+  //       console.error(error); 
+  //       setCheckIn([
+  //         {
+  //           id: "1",
+  //           name: 'Loc',
+  //           role: "Construction Worker",
+  //           date: "2021-09-01",
+  //           validity: "True",
+  //         },
+  //         {
+  //           id: "2",
+  //           name: 'Astro',
+  //           role: "Construction Worker",
+  //           date: "2021-09-01",
+  //           validity: "True",
+  //         },
+  //         {
+  //           id: "3",
+  //           name: 'Daren',
+  //           role: "Construction Worker",
+  //           date: "2021-09-01",
+  //           validity: "True",
+  //         }
+  //       ])
+  //     });
+  // }, []);
 
   const [breachesCount, setBreachesCount] = useState(0);
   const [mostFrequentBreaches, setMostFrequentBreaches] = useState([]);
@@ -287,7 +287,7 @@ const Dashboard = () => {
         {/* ROW 2 */}
         {/* Graph */}
         <Box
-          gridColumn="span 8"
+          gridColumn="span 12"
           gridRow="span 2"
           backgroundColor={colors.primary[400]}
         >
@@ -321,7 +321,7 @@ const Dashboard = () => {
         </Box>
 
         {/* Live Check-in */}
-        <Box
+        {/* <Box
           gridColumn="span 4"
           gridRow="span 2"
           backgroundColor={colors.primary[400]}
@@ -370,7 +370,7 @@ const Dashboard = () => {
               </Box>
             </Box>
           ))}
-        </Box>
+        </Box> */}
       </Box>
     </Box>
   );
