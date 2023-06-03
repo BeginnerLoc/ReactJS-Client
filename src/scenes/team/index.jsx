@@ -155,7 +155,7 @@ const Team = () => {
         <select value={selectedFilter} onChange={handleFilterChange}>
           <option value="">All</option>
           {uniqueNames.map((name) => (
-            <option key={name} value={name}>
+            <option key={name} value={name}> 
               {name}
             </option>
           ))}
@@ -164,16 +164,16 @@ const Team = () => {
         <select value={selectedDateFilter} onChange={handleDateFilterChange}>
           <option value="">All</option>
           <option value="today">Today</option>
-          <option value="sevenDays">Last 7 Days</option>
+          <option value="sevenDays">Last 7 Days</option> 
           <option value="month">This Month</option>
         </select>
       </Box>
       <Box
         m="40px 0 0 0"
-        height="55vh"
+        height="50vh"  
         sx={{
           "& .MuiDataGrid-root": {
-            border: "none",
+            border: "none", 
           },
           "& .MuiDataGrid-cell": {
             borderBottom: "none",
