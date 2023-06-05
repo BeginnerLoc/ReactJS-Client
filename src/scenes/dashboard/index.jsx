@@ -88,40 +88,18 @@ const Dashboard = () => {
       });
   };  
   
-  // //Live Check-in data
-  const [checkIn, setCheckIn] = useState([]);
-  // useEffect(() => {
-  //   axios.get( `${URL}/api/check_in`)
-  //     .then(response => {
-  //       setCheckIn(JSON.parse(response.data));
-  //     })
-  //     .catch(error => {
-  //       console.error(error); 
-  //       setCheckIn([
-  //         {
-  //           id: "1",
-  //           name: 'Loc',
-  //           role: "Construction Worker",
-  //           date: "2021-09-01",
-  //           validity: "True",
-  //         },
-  //         {
-  //           id: "2",
-  //           name: 'Astro',
-  //           role: "Construction Worker",
-  //           date: "2021-09-01",
-  //           validity: "True",
-  //         },
-  //         {
-  //           id: "3",
-  //           name: 'Daren',
-  //           role: "Construction Worker",
-  //           date: "2021-09-01",
-  //           validity: "True",
-  //         }
-  //       ])
-  //     });
-  // }, []);
+  //number of incidents
+  const [numberOfIncident, setNumberOfIncident] = useState(0);
+  useEffect(() => {
+    axios.get( `${URL}/api/num_hazards`)
+      .then(response => {
+        setNumberOfIncident(JSON.parse(response.data.num_hazards));
+      })
+      .catch(error => {
+        console.error(error); 
+       
+      });
+  }, []);
 
   const [breachesCount, setBreachesCount] = useState(0);
   const [mostFrequentBreaches, setMostFrequentBreaches] = useState([]);
@@ -257,7 +235,7 @@ const Dashboard = () => {
           justifyContent="center"
         >
           <StatBox
-            title="50"
+            title={numberOfIncident.toString()}
             subtitle="Number Of Hazards"
             icon={
               <DangerousIcon

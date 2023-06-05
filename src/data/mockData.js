@@ -437,7 +437,7 @@ export const mockLineData = [
     data: [
       {
         x: "Mon",
-        y: 2,
+        y: 8,
       },
       {
         x: "Tues",
