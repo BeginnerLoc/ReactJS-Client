@@ -67,10 +67,10 @@ const BarChart = ({ isDashboard = false }) => {
               "hot dogColor": "hsl(229, 70%, 50%)",
               [Object.keys(breachesByWorker[0].descriptions)[1]]: breachesByWorker[0].descriptions["No Safety Vest"],
               burgerColor: "hsl(111, 70%, 50%)",
-              [Object.keys(breachesByWorker[0].descriptions)[2]]: breachesByWorker[0].descriptions["No Ear Muffs"],
-              kebabColor: "hsl(273, 70%, 50%)",
-              [Object.keys(breachesByWorker[0].descriptions)[3]]: breachesByWorker[0].descriptions["No Gloves"],
-              donutColor: "hsl(275, 70%, 50%)",
+              // [Object.keys(breachesByWorker[0].descriptions)[2]]: breachesByWorker[0].descriptions["No Ear Muffs"],
+              // kebabColor: "hsl(273, 70%, 50%)",
+              // [Object.keys(breachesByWorker[0].descriptions)[3]]: breachesByWorker[0].descriptions["No Gloves"],
+              // donutColor: "hsl(275, 70%, 50%)",
             },
             {
               country: breachesByWorker[1].workerName,
@@ -78,10 +78,10 @@ const BarChart = ({ isDashboard = false }) => {
               "hot dogColor": "hsl(229, 70%, 50%)",
               [Object.keys(breachesByWorker[1].descriptions)[1]]: breachesByWorker[1].descriptions["No Safety Vest"],
               burgerColor: "hsl(111, 70%, 50%)",
-              [Object.keys(breachesByWorker[1].descriptions)[2]]: breachesByWorker[1].descriptions["No Ear Muffs"],
-              kebabColor: "hsl(273, 70%, 50%)",
-              [Object.keys(breachesByWorker[1].descriptions)[3]]: breachesByWorker[1].descriptions["No Gloves"],
-              donutColor: "hsl(275, 70%, 50%)",
+              // [Object.keys(breachesByWorker[1].descriptions)[2]]: breachesByWorker[1].descriptions["No Ear Muffs"],
+              // kebabColor: "hsl(273, 70%, 50%)",
+              // [Object.keys(breachesByWorker[1].descriptions)[3]]: breachesByWorker[1].descriptions["No Gloves"],
+              // donutColor: "hsl(275, 70%, 50%)",
             },
             {
               country: breachesByWorker[2].workerName,
@@ -89,10 +89,10 @@ const BarChart = ({ isDashboard = false }) => {
               "hot dogColor": "hsl(229, 70%, 50%)",
               [Object.keys(breachesByWorker[2].descriptions)[1]]: breachesByWorker[2].descriptions["No Safety Vest"],
               burgerColor: "hsl(111, 70%, 50%)",
-              [Object.keys(breachesByWorker[2].descriptions)[2]]: breachesByWorker[2].descriptions["No Ear Muffs"],
-              kebabColor: "hsl(273, 70%, 50%)",
-              [Object.keys(breachesByWorker[2].descriptions)[3]]: breachesByWorker[2].descriptions["No Gloves"],
-              donutColor: "hsl(275, 70%, 50%)",
+              // [Object.keys(breachesByWorker[2].descriptions)[2]]: breachesByWorker[2].descriptions["No Ear Muffs"],
+              // kebabColor: "hsl(273, 70%, 50%)",
+              // [Object.keys(breachesByWorker[2].descriptions)[3]]: breachesByWorker[2].descriptions["No Gloves"],
+              // donutColor: "hsl(275, 70%, 50%)",
             },
             {
               country: breachesByWorker[3].workerName,
@@ -100,10 +100,10 @@ const BarChart = ({ isDashboard = false }) => {
               "hot dogColor": "hsl(229, 70%, 50%)",
               [Object.keys(breachesByWorker[3].descriptions)[1]]: breachesByWorker[3].descriptions["No Safety Vest"],
               burgerColor: "hsl(111, 70%, 50%)",
-              [Object.keys(breachesByWorker[3].descriptions)[2]]: breachesByWorker[3].descriptions["No Ear Muffs"],
-              kebabColor: "hsl(273, 70%, 50%)",
-              [Object.keys(breachesByWorker[3].descriptions)[3]]: breachesByWorker[3].descriptions["No Gloves"],
-              donutColor: "hsl(275, 70%, 50%)",
+              // [Object.keys(breachesByWorker[3].descriptions)[2]]: breachesByWorker[3].descriptions["No Ear Muffs"],
+              // kebabColor: "hsl(273, 70%, 50%)",
+              // [Object.keys(breachesByWorker[3].descriptions)[3]]: breachesByWorker[3].descriptions["No Gloves"],
+              // donutColor: "hsl(275, 70%, 50%)",
             },
           ]);
         })
@@ -147,7 +147,7 @@ const BarChart = ({ isDashboard = false }) => {
       }}
       //keys={["hot dog", "burger", "kebab", "donut"]}
       //Shows the 0-6 Options
-      keys={(([...keys]) => keys.slice(0, 6))(mostFrequentBreaches.map(([description, count]) => description))}
+      keys={(([...keys]) => keys.slice(0, 2))(mostFrequentBreaches.map(([description, count]) => description))}
       indexBy="country"
       margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
       padding={0.3}
