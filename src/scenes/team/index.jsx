@@ -1,7 +1,8 @@
 import { Box, Typography, useTheme } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { tokens } from "../../theme";
+import ProjectContext from "../../context/ProjectContext";
 
 import axios from "axios";
 import Header from "../../components/Header";
@@ -9,6 +10,7 @@ import Header from "../../components/Header";
 const URL = 'http://localhost:5000';
 
 const Team = () => {
+  const { projectId } = useContext(ProjectContext);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
@@ -29,7 +31,7 @@ const Team = () => {
 
   useEffect(() => {
     axios
-      .get(`${URL}/api/all_workers`)
+      .get(`${URL}/api/${projectId}/all_workers`)
       .then((workersResponse) => {
         const workersData = workersResponse.data;
 
@@ -38,7 +40,7 @@ const Team = () => {
         setUniqueNames(names);
 
         axios
-          .get(`${URL}/api/indiv_breaches`) 
+          .get(`${URL}/api/${projectId}/indiv_breaches`) 
           .then((breachesResponse) => {
             const breachesData = JSON.parse(breachesResponse.data);
 

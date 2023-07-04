@@ -7,16 +7,16 @@ import EventOutlinedIcon from '@mui/icons-material/EventOutlined';
 import DangerousIcon from '@mui/icons-material/Dangerous';
 import Header from "../../components/Header";
 import StatBox from "../../components/StatBox"
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from 'axios';
 import BarChart from "../../components/BarChart";
-// import MenuItem from '@mui/material/MenuItem';
-// import Select from '@mui/material/Select';;
 
+import ProjectContext from "../../context/ProjectContext";
 
 const URL = 'http://localhost:5000'
 
 const Dashboard = () => {
+  const { projectId } = useContext(ProjectContext);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
@@ -30,10 +30,10 @@ const Dashboard = () => {
   //today's no of breaches
   const [todayBreaches, setTodayBreaches] = useState(0);
   useEffect(() => {
-    axios.get( `${URL}/api/today_breaches`)
+    axios.get( `${URL}/api/${projectId}/today_breaches`)
       .then(response => {
         console.log(response.data)
-        setTodayBreaches(response.data);
+        setTodayBreaches(response.data['count']);
       })
       .catch(error => {
         console.error(error);
@@ -43,7 +43,7 @@ const Dashboard = () => {
     //today's number of breaches
     const [todayCheckin, setTodayCheckin] = useState(0);
     useEffect(() => {
-      axios.get(`${URL}/api/num_check_in`)
+      axios.get(`${URL}/api/${projectId}/num_check_in`)
         .then(response => {
           console.log(response.data);
           setTodayCheckin(response.data.num_check_ins);
@@ -57,7 +57,7 @@ const Dashboard = () => {
   //most breaches
   const [mostBreaches, setMostBreaches] = useState({});
   useEffect(() => {
-    axios.get( `${URL}/api/most_breaches`)
+    axios.get( `${URL}/api/${projectId}/most_breaches`)
       .then(response => {
         setMostBreaches(JSON.parse(response.data));
       })
@@ -91,7 +91,7 @@ const Dashboard = () => {
   //number of incidents
   const [numberOfIncident, setNumberOfIncident] = useState(0);
   useEffect(() => {
-    axios.get( `${URL}/api/num_hazards`)
+    axios.get( `${URL}/api/${projectId}/num_hazards`)
       .then(response => {
         setNumberOfIncident(JSON.parse(response.data.num_hazards));
       })
@@ -105,7 +105,7 @@ const Dashboard = () => {
   const [mostFrequentBreaches, setMostFrequentBreaches] = useState([]);
   
   useEffect(() => {
-    axios.get(`${URL}/api/graph_breaches`)
+    axios.get(`${URL}/api/${projectId}/graph_breaches`)
       .then(response => {
         const data = response.data;
   

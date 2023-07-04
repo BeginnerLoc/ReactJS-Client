@@ -1,14 +1,16 @@
 import { useTheme } from "@mui/material";
 import { ResponsiveBar } from "@nivo/bar";
 import { tokens } from "../theme";
+import ProjectContext from "../context/ProjectContext";
 // import { mockBarData as data } from "../data/mockData";
 
-import { useState, useEffect, React } from "react";
+import { useState, useEffect, React, useContext } from "react";
 import axios from 'axios';
 
 const URL = 'http://localhost:5000'
 
 const BarChart = ({ isDashboard = false }) => {
+  const { projectId } = useContext(ProjectContext);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
@@ -17,7 +19,7 @@ const BarChart = ({ isDashboard = false }) => {
   const [mostFrequentBreaches, setMostFrequentBreaches] = useState([]);
   const [graph, setGraph] = useState([]);
   useEffect(() => {
-    axios.get( `${URL}/api/graph_breaches`)
+    axios.get( `${URL}/api/${projectId}/graph_breaches`)
         .then(response => {
           const data = response.data;
           
