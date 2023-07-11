@@ -1,9 +1,7 @@
-import { Box, Button, Typography, useTheme, MenuItem, Select, FormControl, FormControlLabel, Checkbox } from "@mui/material";
+import { Box, Button, useTheme, FormControl, FormControlLabel, Checkbox } from "@mui/material";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
-import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import React, { useState, useEffect } from "react";
-
 import axios from "axios";
 import Header from "../../components/Header";
 
@@ -30,6 +28,15 @@ const Download = () => {
 
   const handleDownload = () => {
     setShowDropdowns(true);
+
+    // Get the start and end date values from the input fields
+    const startDate = new Date(document.getElementById('Start').value);
+    const endDate = new Date(document.getElementById('End').value);
+
+    // Calculate the difference in days between the start and end dates
+    const timeDiff = Math.abs(endDate.getTime() - startDate.getTime());
+    const days = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
     // Send a request to the server endpoint responsible for generating and serving the PDF
     const url = `${URL}/download_pdf?report_type=${reportType}&days=${days}`;
     axios
@@ -89,7 +96,7 @@ const Download = () => {
           <input type="date" id="Start" name="Start Date" />
         </div>
         <div style={{ paddingBottom: '10px' }}>
-          <label htmlFor="End" style={{ fontSize: '16px', paddingLeft: '5px', paddingRight: '5px' }}>End:</label>
+          <label htmlFor="End" style={{ fontSize: '16px', paddingLeft: '5px', paddingRight: '11px' }}>End:</label>
           <input type="date" id="End" name="End Date" />
         </div>  
         
@@ -103,7 +110,6 @@ const Download = () => {
         >
           Download Report
         </Button>
-        
       </Box>
     </Box>
   );
