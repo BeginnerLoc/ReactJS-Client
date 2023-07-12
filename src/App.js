@@ -12,7 +12,7 @@ import ProjectModal from './scenes/modal';
 import Dashboard from './scenes/dashboard/index';
 import Team from './scenes/team';
 import Download from './scenes/download';
-
+import ChatBot from './components/chatbot';
 function App() {
   const [theme, colorMode] = useMode();
 
@@ -32,6 +32,7 @@ function App() {
                 <Route path="/download" element={<Download />} />
               </Routes>
             </main>
+            <ChatBot/>
           </div>
         </ProjectProvider>
       </ThemeProvider>
