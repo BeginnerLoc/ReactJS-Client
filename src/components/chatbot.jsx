@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
-import ChatIcon from '@mui/icons-material/Chat';
+import SmartToyIcon from '@mui/icons-material/SmartToy';
 import ChatMessageBox from './ChatMessageBox';
 import { useTheme } from '@mui/material';
 import { tokens } from '../theme';
@@ -49,7 +49,7 @@ const ChatBot = () => {
       onMouseLeave={handleMouseLeave}
     >
       <Avatar style={avatarStyle}>
-        <ChatIcon />
+        <SmartToyIcon />
       </Avatar>
       {isChatOpen && <ChatMessageBox />}
     </div>
