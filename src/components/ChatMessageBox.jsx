@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
@@ -7,6 +7,7 @@ import IconButton from '@mui/material/IconButton';
 import SendIcon from '@mui/icons-material/Send';
 import { useTheme } from '@mui/material';
 import { tokens } from '../theme';
+import BotContext from '../context/BotContext';
 
 const ChatMessageBox = () => {
   const theme = useTheme();
@@ -14,23 +15,13 @@ const ChatMessageBox = () => {
   const [messages, setMessages] = useState([]);
   const [showChat, setShowChat] = useState(false);
 
+  const { botAnswer } = useContext(BotContext);
+
   useEffect(() => {
     // Simulating loading messages from an API or delay before displaying
-    const timeout = setTimeout(() => {
-      setMessages([
-        { text: 'Hello', sender: 'assistant' },
-        { text: 'Hi', sender: 'user' },
-        { text: 'How can I help you?', sender: 'assistant' },
-        { text: 'I have a question...', sender: 'user' },
-        { text: 'I have a question...', sender: 'user' },
-        { text: 'I have a question...', sender: 'user' },
-        { text: 'I have a question...', sender: 'user' },
-      ]);
-      setShowChat(true);
-    }, 500);
-
-    return () => clearTimeout(timeout);
-  }, []);
+    setMessages([...messages, { text: botAnswer, sender: 'bot' }]);
+    setShowChat(true);
+  }, [botAnswer]);
 
   const handleSubmit = (e) => {
     e.preventDefault();

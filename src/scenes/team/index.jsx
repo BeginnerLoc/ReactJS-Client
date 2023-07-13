@@ -1,8 +1,9 @@
 import { Box, Typography, useTheme } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, useRef } from "react";
 import { tokens } from "../../theme";
 import ProjectContext from "../../context/ProjectContext";
+import BotContext from "../../context/BotContext";
 
 import axios from "axios";
 import Header from "../../components/Header";
@@ -10,6 +11,10 @@ import Header from "../../components/Header";
 const URL = 'http://localhost:5000';
 
 const Team = () => {
+  const isFirstRender = useRef(true);
+  const { updateData } = useContext(BotContext);
+
+
   const { projectId } = useContext(ProjectContext);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -33,7 +38,7 @@ const Team = () => {
 
   useEffect(() => {
     axios
-      .get(`${URL}/api/${projectId}/all_workers`) 
+      .get(`${URL}/api/${projectId}/all_workers`)
       .then((workersResponse) => {
         const workersData = workersResponse.data;
 
@@ -92,15 +97,20 @@ const Team = () => {
   }, []);
 
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
     let filteredData = workerDetails;
-  
+
     // Apply name filter
     if (selectedFilter !== "") {
       filteredData = filteredData.filter(
         (worker) => worker.name === selectedFilter
       );
     }
-  
+
     // Apply date range filter
     if (selectedStartDate !== "" && selectedEndDate !== "") {
       filteredData = filteredData.filter((worker) => {
@@ -115,17 +125,18 @@ const Team = () => {
         );
       });
     }
-  
+
     // Sort the filtered data by date, name, or breach time
     if (topBreaches.length > 0) {
       filteredData = filteredData.filter((worker) =>
         topBreaches.includes(worker.id)
       );
     }
-  
+
     setFilteredWorkerDetails(filteredData);
+    updateData(filteredData)
   }, [selectedFilter, selectedStartDate, selectedEndDate, workerDetails, topBreaches]);
-  
+
   // Function to format date as "YYYY-MM-DD"
   const formatDate = (date) => {
     const year = date.getFullYear();
@@ -133,7 +144,7 @@ const Team = () => {
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
-  
+
   const handleFilterChange = (event) => {
     const selectedValue = event.target.value;
     setSelectedFilter(selectedValue);
@@ -170,9 +181,11 @@ const Team = () => {
     setTopBreaches(sortedBreaches);
   };
 
+
+
   return (
     <Box m="20px">
-      <Header title="Breach Management Console" subtitle="Centralized Control for Effective Breach Handling"/>
+      <Header title="Breach Management Console" subtitle="Centralized Control for Effective Breach Handling" />
       <Box>
         <Typography variant="subtitle1">Filter by Name:</Typography>
         <select value={selectedFilter} onChange={handleFilterChange}>
@@ -192,7 +205,7 @@ const Team = () => {
         />
         <input
           type="text"
-          value={selectedEndDate} 
+          value={selectedEndDate}
           onChange={handleEndDateChange}
           placeholder="End Date (YYYY-MM-DD)"
         />
@@ -246,7 +259,7 @@ const Team = () => {
           sortModel={[
             // Enable sorting by date, name, and breach time
             { field: "time", sort: "asc" },
-            { field: "name", sort: "asc" }, 
+            { field: "name", sort: "asc" },
             { field: "breach", sort: "asc" },
           ]}
         />
