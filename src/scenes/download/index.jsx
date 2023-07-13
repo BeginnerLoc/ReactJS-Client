@@ -1,13 +1,15 @@
-import { Box, Button, useTheme, FormControl, FormControlLabel, Checkbox } from "@mui/material";
+import { Box, Button, useTheme, FormControl, FormControlLabel, Checkbox, Select, MenuItem } from "@mui/material";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
 import { tokens } from "../../theme";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import Header from "../../components/Header";
+import ProjectContext from "../../context/ProjectContext";
 
 const URL = 'http://localhost:5000';
 
 const Download = () => {
+  const { projectId } = useContext(ProjectContext);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
@@ -19,11 +21,16 @@ const Download = () => {
 
   const handleCheckboxChange = (event) => {
     const { name, checked } = event.target;
+  
+    // Update the checkedItems state
     if (checked) {
       setCheckedItems([...checkedItems, name]);
     } else {
       setCheckedItems(checkedItems.filter((item) => item !== name));
     }
+  
+    // Update the reportType state
+    setReportType(name);
   };
 
   const handleDownload = () => {
@@ -38,7 +45,8 @@ const Download = () => {
     const days = Math.ceil(timeDiff / (1000 * 3600 * 24));
 
     // Send a request to the server endpoint responsible for generating and serving the PDF
-    const url = `${URL}/download_pdf?report_type=${reportType}&days=${days}`;
+    const url = `${URL}/download_pdf?report_type=${reportType}&days=${days}&project_id=${projectId}`;
+
     axios
       .get(url, { responseType: 'blob' })
       .then(response => {
@@ -59,33 +67,32 @@ const Download = () => {
       <Box m="20px">
       
         {/* Report Type */}
-        <div>
-          <h2>Report Type</h2>
-          <FormControl>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={checkedItems.includes('incidents')}
-                  onChange={handleCheckboxChange}
-                  name="incidents"
-                  color="success"
-                />
-              }
-              label="Incidents"
+        <Box sx={{ marginRight: '10px' }}>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={checkedItems.includes('incidents')}
+              onChange={handleCheckboxChange}
+              name="incidents"
+              color="success"
+              value="incidents"
             />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={checkedItems.includes('breaches')}
-                  onChange={handleCheckboxChange}
-                  name="breaches"
-                  color="success"
-                />
-              }
-              label="Breaches"
+          }
+          label="Incidents"
+        />
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={checkedItems.includes('breaches')}
+              onChange={handleCheckboxChange}
+              name="breaches"
+              color="success"
+              value="breaches"
             />
-          </FormControl>
-        </div>
+          }
+          label="Breaches"
+        />
+      </Box>
 
         {/* Date Range Selector */}
         <div>
@@ -106,7 +113,7 @@ const Download = () => {
           color="primary"
           size="large"
           startIcon={<DownloadOutlinedIcon />}
-          onClick={handleDownload}
+          onClick={() => handleDownload()}
         >
           Download Report
         </Button>
