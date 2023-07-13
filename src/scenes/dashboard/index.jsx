@@ -103,6 +103,8 @@ const Dashboard = () => {
 
   const [breachesCount, setBreachesCount] = useState(0);
   const [mostFrequentBreaches, setMostFrequentBreaches] = useState([]);
+  const [breachesByWorker, setBreachesByWorker] = useState([]);
+  const [totalCount, setTotalCount] = useState(0);
   
   useEffect(() => {
     axios.get(`${URL}/api/${projectId}/graph_breaches`)
@@ -121,10 +123,42 @@ const Dashboard = () => {
   
         // Get the description names of the most frequent breaches
         const mostFrequentDescriptionNames = sortedBreaches.map(entry => entry[0]);
+
+
+        // Create a Set to store unique worker names
+        const uniqueWorkerNames = new Set();
+
+        // Iterate over the breaches and add worker names to the Set
+        data.forEach((breach) => {
+          const workerName = breach.worker_name;
+          uniqueWorkerNames.add(workerName);
+        });
+
+        // Convert the Set to an array of unique worker names
+        const uniqueWorkerNamesArray = Array.from(uniqueWorkerNames);
+
+        // Access the breaches count and description based on worker name
+        const breachesByWorker = uniqueWorkerNamesArray.map(workerName => {
+          const count = data.filter(breach => breach.worker_name === workerName).length;
+          const descriptions = data
+            .filter(breach => breach.worker_name === workerName)
+            .reduce((acc, breach) => {
+              acc[breach.description] = (acc[breach.description] || 0) + 1;
+              return acc;
+            }, {});
+          return { workerName, count, descriptions };
+        });
+        const sortedBreachesByWorker = breachesByWorker.sort((a, b) => b.count - a.count);
+
+        const descriptions = breachesByWorker[0].descriptions;
+
+        const totalCount = Object.values(descriptions).reduce((total, count) => total + count, 0);
   
         // Set the breaches count and most frequent breaches state variables
         setBreachesCount(sortedBreaches[0][1]);
         setMostFrequentBreaches(mostFrequentDescriptionNames);
+        setBreachesByWorker(sortedBreachesByWorker);
+        setTotalCount(totalCount);
 
       })
       .catch(error => {
@@ -263,9 +297,46 @@ const Dashboard = () => {
         </Box>
 
         {/* ROW 2 */}
-        {/* Graph */}
+        {/* Graph 1 */}
         <Box
-          gridColumn="span 12"
+          gridColumn="span 6"
+          gridRow="span 2"
+          backgroundColor={colors.primary[400]}
+        >
+          <Box
+            mt="25px"
+            p="0 30px"
+            display="flex "
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Box>
+              <Typography
+                variant="h5"
+                fontWeight="600"
+                color={colors.grey[100]}
+              >
+                Top Breaches Worker: 
+              </Typography>
+              {breachesByWorker[0]?.descriptions && (
+                <Typography
+                  variant="h3"
+                  fontWeight="bold"
+                  color={colors.greenAccent[500]}
+                >
+                  {breachesByWorker[0].workerName} - {totalCount}
+                </Typography>
+              )}
+            </Box>
+          </Box>
+          <Box height="250px" m="-20px 0 0 0">
+            <BarChart isDashboard={true}/>
+          </Box>
+        </Box>
+        
+        {/* Graph 2 */}
+        <Box
+          gridColumn="span 6"
           gridRow="span 2"
           backgroundColor={colors.primary[400]}
         >
