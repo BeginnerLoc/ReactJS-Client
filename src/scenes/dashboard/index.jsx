@@ -123,7 +123,7 @@ const Dashboard = () => {
         const mostFrequentDescriptionNames = sortedBreaches.map(entry => entry[0]);
   
         // Set the breaches count and most frequent breaches state variables
-        setBreachesCount(data.length);
+        setBreachesCount(sortedBreaches[0][1]);
         setMostFrequentBreaches(mostFrequentDescriptionNames);
 
       })

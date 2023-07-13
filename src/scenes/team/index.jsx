@@ -1,5 +1,5 @@
 import { Box, Typography, useTheme } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { useEffect, useState, useContext } from "react";
 import { tokens } from "../../theme";
 import ProjectContext from "../../context/ProjectContext";
@@ -27,11 +27,13 @@ const Team = () => {
   const [selectedFilter, setSelectedFilter] = useState("");
   const [filteredWorkerDetails, setFilteredWorkerDetails] = useState([]);
   const [uniqueNames, setUniqueNames] = useState([]);
-  const [selectedDateFilter, setSelectedDateFilter] = useState("");
+  const [selectedStartDate, setSelectedStartDate] = useState("");
+  const [selectedEndDate, setSelectedEndDate] = useState("");
+  const [topBreaches, setTopBreaches] = useState([]);
 
   useEffect(() => {
     axios
-      .get(`${URL}/api/${projectId}/all_workers`)
+      .get(`${URL}/api/${projectId}/all_workers`) 
       .then((workersResponse) => {
         const workersData = workersResponse.data;
 
@@ -40,7 +42,7 @@ const Team = () => {
         setUniqueNames(names);
 
         axios
-          .get(`${URL}/api/${projectId}/indiv_breaches`) 
+          .get(`${URL}/api/${projectId}/indiv_breaches`)
           .then((breachesResponse) => {
             const breachesData = JSON.parse(breachesResponse.data);
 
@@ -91,43 +93,47 @@ const Team = () => {
 
   useEffect(() => {
     let filteredData = workerDetails;
-
+  
     // Apply name filter
     if (selectedFilter !== "") {
       filteredData = filteredData.filter(
         (worker) => worker.name === selectedFilter
       );
     }
-
-    // Apply date filters
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Set the time to the start of the day
-
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-    sevenDaysAgo.setHours(0, 0, 0, 0); // Set the time to the start of the day
-
-    const startOfMonth = new Date();
-    startOfMonth.setDate(1);
-    startOfMonth.setHours(0, 0, 0, 0); // Set the time to the start of the day
-
-    if (selectedDateFilter === "today") {
-      filteredData = filteredData.filter(
-        (worker) => new Date(worker.time) >= today
-      );
-    } else if (selectedDateFilter === "sevenDays") {
-      filteredData = filteredData.filter(
-        (worker) => new Date(worker.time) >= sevenDaysAgo
-      );
-    } else if (selectedDateFilter === "month") {
-      filteredData = filteredData.filter(
-        (worker) => new Date(worker.time) >= startOfMonth
+  
+    // Apply date range filter
+    if (selectedStartDate !== "" && selectedEndDate !== "") {
+      filteredData = filteredData.filter((worker) => {
+        const workerTime = new Date(worker.time);
+        const startDate = new Date(selectedStartDate);
+        const endDate = new Date(selectedEndDate);
+        const workerDateString = formatDate(workerTime);
+        const startDateString = formatDate(startDate);
+        const endDateString = formatDate(endDate);
+        return (
+          workerDateString >= startDateString && workerDateString <= endDateString
+        );
+      });
+    }
+  
+    // Sort the filtered data by date, name, or breach time
+    if (topBreaches.length > 0) {
+      filteredData = filteredData.filter((worker) =>
+        topBreaches.includes(worker.id)
       );
     }
-
+  
     setFilteredWorkerDetails(filteredData);
-  }, [selectedFilter, selectedDateFilter, workerDetails]);
-
+  }, [selectedFilter, selectedStartDate, selectedEndDate, workerDetails, topBreaches]);
+  
+  // Function to format date as "YYYY-MM-DD"
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+  
   const handleFilterChange = (event) => {
     const selectedValue = event.target.value;
     setSelectedFilter(selectedValue);
@@ -144,38 +150,67 @@ const Team = () => {
     }
   };
 
-  const handleDateFilterChange = (event) => {
+  const handleStartDateChange = (event) => {
     const selectedValue = event.target.value;
-    setSelectedDateFilter(selectedValue);
+    setSelectedStartDate(selectedValue);
+  };
+
+  const handleEndDateChange = (event) => {
+    const selectedValue = event.target.value;
+    setSelectedEndDate(selectedValue);
+  };
+
+  const handleTopBreachesChange = (event) => {
+    const topBreachesCount = parseInt(event.target.value, 10);
+    const sortedBreaches = workerDetails
+      .slice()
+      .sort((a, b) => new Date(b.time.replace(" ", "T")) - new Date(a.time.replace(" ", "T")))
+      .slice(0, Math.ceil((topBreachesCount / 100) * workerDetails.length))
+      .map((worker) => worker.id);
+    setTopBreaches(sortedBreaches);
   };
 
   return (
     <Box m="20px">
-      <Header title="Breaches" subtitle="Managing the Workers" />
+      <Header title="Breach Management Console" subtitle="Centralized Control for Effective Breach Handling"/>
       <Box>
         <Typography variant="subtitle1">Filter by Name:</Typography>
         <select value={selectedFilter} onChange={handleFilterChange}>
           <option value="">All</option>
           {uniqueNames.map((name) => (
-            <option key={name} value={name}> 
+            <option key={name} value={name}>
               {name}
             </option>
           ))}
         </select>
-        <Typography variant="subtitle1">Filter by Date:</Typography>
-        <select value={selectedDateFilter} onChange={handleDateFilterChange}>
-          <option value="">All</option>
-          <option value="today">Today</option>
-          <option value="sevenDays">Last 7 Days</option> 
-          <option value="month">This Month</option>
-        </select>
+        <Typography variant="subtitle1">Filter by Date Range:</Typography>
+        <input
+          type="text"
+          value={selectedStartDate}
+          onChange={handleStartDateChange}
+          placeholder="Start Date (YYYY-MM-DD)"
+        />
+        <input
+          type="text"
+          value={selectedEndDate} 
+          onChange={handleEndDateChange}
+          placeholder="End Date (YYYY-MM-DD)"
+        />
+        <Typography variant="subtitle1">Top % Breaches:</Typography>
+        <input
+          type="number"
+          min="0"
+          max="100"
+          step="10"
+          onChange={handleTopBreachesChange}
+        />
       </Box>
       <Box
-        m="40px 0 0 0"
-        height="50vh"  
+        m="10px 0 0 0"
+        height="50vh"
         sx={{
           "& .MuiDataGrid-root": {
-            border: "none", 
+            border: "none",
           },
           "& .MuiDataGrid-cell": {
             borderBottom: "none",
@@ -203,8 +238,17 @@ const Team = () => {
           rows={filteredWorkerDetails}
           columns={columns}
           pageSize={10}
-          rowsPerPageOptions={[10]} 
+          rowsPerPageOptions={[10]}
           disableSelectionOnClick
+          components={{
+            Toolbar: GridToolbar, // Add a toolbar to the grid
+          }}
+          sortModel={[
+            // Enable sorting by date, name, and breach time
+            { field: "time", sort: "asc" },
+            { field: "name", sort: "asc" }, 
+            { field: "breach", sort: "asc" },
+          ]}
         />
       </Box>
     </Box>
