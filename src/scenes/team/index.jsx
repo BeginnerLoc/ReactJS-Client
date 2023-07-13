@@ -1,4 +1,4 @@
-import { Box, Typography, useTheme } from "@mui/material";
+import { Box, Typography, useTheme, Dialog, DialogTitle, DialogContent, DialogActions, Button } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { useEffect, useState, useContext } from "react";
 import { tokens } from "../../theme";
@@ -7,7 +7,10 @@ import ProjectContext from "../../context/ProjectContext";
 import axios from "axios";
 import Header from "../../components/Header";
 
-const URL = 'http://localhost:5000';
+import { TextField, Autocomplete, MenuItem } from "@mui/material";
+import CheckIcon from "@mui/icons-material/Check";
+
+const URL = "http://localhost:5000";
 
 const Team = () => {
   const { projectId } = useContext(ProjectContext);
@@ -21,19 +24,36 @@ const Team = () => {
     { field: "supervisor", headerName: "Supervisor", flex: 1 },
     { field: "breach", headerName: "Breach", flex: 1 },
     { field: "time", headerName: "Time", flex: 1 },
+    {
+      field: "viewDetails",
+      headerName: "View Details",
+      sortable: false,
+      filterable: false,
+      disableColumnMenu: true,
+      renderCell: (params) => (
+        <Button
+          variant="contained"
+          onClick={() => handleViewDetails(params.row)}
+        >
+          View Details
+        </Button>
+      ),
+    },
   ];
 
   const [workerDetails, setWorkerDetails] = useState([]);
-  const [selectedFilter, setSelectedFilter] = useState("");
+  const [selectedFilter, setSelectedFilter] = useState([]);
   const [filteredWorkerDetails, setFilteredWorkerDetails] = useState([]);
-  const [uniqueNames, setUniqueNames] = useState([]);
+  const [uniqueFilterNames, setUniqueNames] = useState([]);
   const [selectedStartDate, setSelectedStartDate] = useState("");
   const [selectedEndDate, setSelectedEndDate] = useState("");
   const [topBreaches, setTopBreaches] = useState([]);
+  const [selectedWorker, setSelectedWorker] = useState(null);
+  const [openDialog, setOpenDialog] = useState(false);
 
   useEffect(() => {
     axios
-      .get(`${URL}/api/${projectId}/all_workers`) 
+      .get(`${URL}/api/${projectId}/all_workers`)
       .then((workersResponse) => {
         const workersData = workersResponse.data;
 
@@ -93,14 +113,14 @@ const Team = () => {
 
   useEffect(() => {
     let filteredData = workerDetails;
-  
+
     // Apply name filter
-    if (selectedFilter !== "") {
-      filteredData = filteredData.filter(
-        (worker) => worker.name === selectedFilter
+    if (selectedFilter.length > 0) {
+      filteredData = filteredData.filter((worker) =>
+        selectedFilter.includes(worker.name)
       );
     }
-  
+
     // Apply date range filter
     if (selectedStartDate !== "" && selectedEndDate !== "") {
       filteredData = filteredData.filter((worker) => {
@@ -111,21 +131,28 @@ const Team = () => {
         const startDateString = formatDate(startDate);
         const endDateString = formatDate(endDate);
         return (
-          workerDateString >= startDateString && workerDateString <= endDateString
+          workerDateString >= startDateString &&
+          workerDateString <= endDateString
         );
       });
     }
-  
+
     // Sort the filtered data by date, name, or breach time
     if (topBreaches.length > 0) {
       filteredData = filteredData.filter((worker) =>
         topBreaches.includes(worker.id)
       );
     }
-  
+
     setFilteredWorkerDetails(filteredData);
-  }, [selectedFilter, selectedStartDate, selectedEndDate, workerDetails, topBreaches]);
-  
+  }, [
+    selectedFilter,
+    selectedStartDate,
+    selectedEndDate,
+    workerDetails,
+    topBreaches,
+  ]);
+
   // Function to format date as "YYYY-MM-DD"
   const formatDate = (date) => {
     const year = date.getFullYear();
@@ -133,15 +160,15 @@ const Team = () => {
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
-  
-  const handleFilterChange = (event) => {
-    const selectedValue = event.target.value;
-    setSelectedFilter(selectedValue);
 
-    // Filter the worker details based on the selected name
-    if (selectedValue !== "") {
-      const filteredData = workerDetails.filter(
-        (worker) => worker.name === selectedValue
+  const handleFilterChange = (event, selectedValues) => {
+    const filterNames = selectedValues.map((value) => value);
+    setSelectedFilter(filterNames);
+
+    // Filter the worker details based on the selected names
+    if (filterNames.length > 0) {
+      const filteredData = workerDetails.filter((worker) =>
+        filterNames.includes(worker.name)
       );
       setFilteredWorkerDetails(filteredData);
     } else {
@@ -161,28 +188,75 @@ const Team = () => {
   };
 
   const handleTopBreachesChange = (event) => {
-    const topBreachesCount = parseInt(event.target.value, 10);
-    const sortedBreaches = workerDetails
-      .slice()
-      .sort((a, b) => new Date(b.time.replace(" ", "T")) - new Date(a.time.replace(" ", "T")))
-      .slice(0, Math.ceil((topBreachesCount / 100) * workerDetails.length))
-      .map((worker) => worker.id);
+    const topBreachesPercentage = parseInt(event.target.value, 10);
+    const totalBreaches = [
+      ...new Set(workerDetails.map((worker) => worker.id)),
+    ];
+    const topBreachesCount = Math.ceil(
+      (topBreachesPercentage / 100) * totalBreaches.length
+    );
+
+    const breachCounts = {};
+    workerDetails.forEach((worker) => {
+      if (worker.id in breachCounts) {
+        breachCounts[worker.id]++;
+      } else {
+        breachCounts[worker.id] = 1;
+      }
+    });
+
+    const sortedBreaches = Object.keys(breachCounts)
+      .sort((a, b) => breachCounts[b] - breachCounts[a])
+      .slice(0, topBreachesCount);
+
     setTopBreaches(sortedBreaches);
+  };
+
+  const handleViewDetails = (worker) => {
+    setSelectedWorker(worker);
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
   };
 
   return (
     <Box m="20px">
-      <Header title="Breach Management Console" subtitle="Centralized Control for Effective Breach Handling"/>
+      <Header
+        title="Breach Management Console"
+        subtitle="Centralized Monitoring for Effective Breach Handling"
+      />
       <Box>
         <Typography variant="subtitle1">Filter by Name:</Typography>
-        <select value={selectedFilter} onChange={handleFilterChange}>
-          <option value="">All</option>
-          {uniqueNames.map((name) => (
-            <option key={name} value={name}>
-              {name}
-            </option>
-          ))}
-        </select>
+        <Autocomplete
+          sx={{ width: 500 }}
+          multiple
+          options={uniqueFilterNames}
+          getOptionLabel={(option) => option}
+          disableCloseOnSelect
+          onChange={handleFilterChange}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              variant="outlined"
+              label="Names"
+              // placeholder="Multiple Names"
+            />
+          )}
+          renderOption={(props, option, { selected }) => (
+            <MenuItem
+              {...props}
+              key={option}
+              value={option}
+              sx={{ justifyContent: "space-between" }}
+            >
+              {option}
+              {selected ? <CheckIcon color="info" /> : null}
+            </MenuItem>
+          )}
+        />
+
         <Typography variant="subtitle1">Filter by Date Range:</Typography>
         <input
           type="text"
@@ -192,11 +266,11 @@ const Team = () => {
         />
         <input
           type="text"
-          value={selectedEndDate} 
+          value={selectedEndDate}
           onChange={handleEndDateChange}
           placeholder="End Date (YYYY-MM-DD)"
         />
-        <Typography variant="subtitle1">Top % Breaches:</Typography>
+        <Typography variant="subtitle1">Top Breaches:</Typography>
         <input
           type="number"
           min="0"
@@ -207,7 +281,7 @@ const Team = () => {
       </Box>
       <Box
         m="10px 0 0 0"
-        height="50vh"
+        height="60vh"
         sx={{
           "& .MuiDataGrid-root": {
             border: "none",
@@ -246,11 +320,36 @@ const Team = () => {
           sortModel={[
             // Enable sorting by date, name, and breach time
             { field: "time", sort: "asc" },
-            { field: "name", sort: "asc" }, 
+            { field: "name", sort: "asc" },
             { field: "breach", sort: "asc" },
           ]}
         />
       </Box>
+      <Dialog open={openDialog} onClose={handleCloseDialog}>
+        <DialogTitle>Breach Details</DialogTitle>
+        {selectedWorker && (
+          <DialogContent>
+            <Typography variant="subtitle1">Worker ID: {selectedWorker.worker_id}</Typography>
+            <Typography variant="subtitle1">Name: {selectedWorker.name}</Typography>
+            <Typography variant="subtitle1">Position: {selectedWorker.position}</Typography>
+            <Typography variant="subtitle1">Supervisor: {selectedWorker.supervisor}</Typography>
+            <Typography variant="subtitle1">Breach: {selectedWorker.breach}</Typography>
+            <Typography variant="subtitle1">Time: {selectedWorker.time}</Typography>
+            <Typography variant="subtitle1">Breach Images:</Typography>
+            {selectedWorker.breach_images.map((image) => (
+              <img
+                key={image._id}
+                src={image.image}
+                alt={image.breach_type}
+                style={{ width: "100%", marginBottom: "10px" }}
+              />
+            ))}
+          </DialogContent>
+        )}
+        <DialogActions>
+          <Button onClick={handleCloseDialog}>Close</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
