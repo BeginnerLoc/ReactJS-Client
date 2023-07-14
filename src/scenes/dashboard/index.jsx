@@ -10,6 +10,7 @@ import StatBox from "../../components/StatBox"
 import React, { useState, useEffect, useContext } from "react";
 import axios from 'axios';
 import BarChart from "../../components/BarChart";
+import PieChart from "../../components/PieChart";
 
 import ProjectContext from "../../context/ProjectContext";
 
@@ -365,7 +366,7 @@ const Dashboard = () => {
             </Box>
           </Box>
           <Box height="250px" m="-20px 0 0 0">
-            <BarChart isDashboard={true}/>
+            <PieChart />
           </Box>
         </Box>
 

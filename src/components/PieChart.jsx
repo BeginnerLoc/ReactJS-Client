@@ -1,14 +1,81 @@
 import { ResponsivePie } from "@nivo/pie";
 import { tokens } from "../theme";
 import { useTheme } from "@mui/material";
-import { mockPieData as data } from "../data/mockData";
+import ProjectContext from "../context/ProjectContext";
+//import { mockPieData as data } from "../data/mockData";
+
+import { useState, useEffect, React, useContext } from "react";
+import axios from 'axios';
+
+const URL = 'http://localhost:5000'
+
 
 const PieChart = () => {
+  const { projectId } = useContext(ProjectContext);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
+  const [graph, setGraph] = useState([]);
+
+  useEffect(() => {
+    axios.get( `${URL}/api/${projectId}/graph_breaches`)
+        .then(response => {
+          const data = response.data;
+          
+          // Count the most frequent breaches
+          const breachCounts = {};
+          data.forEach(breach => {
+            const description = breach.description;
+            breachCounts[description] = (breachCounts[description] || 0) + 1;
+          });
+
+          // // Sort the breaches by count in descending order
+          const sortedBreaches = Object.entries(breachCounts).sort((a, b) => b[1] - a[1]);
+
+          // // Get the description names of the most frequent breaches
+          const mostFrequentDescriptionNames = sortedBreaches.map(entry => entry[0]);
+
+          setGraph([
+            {
+              id: mostFrequentDescriptionNames[0],
+              label: mostFrequentDescriptionNames[0],
+              value: sortedBreaches[0][1],
+              color: "hsl(104, 70%, 50%)",
+            },
+            {
+              id: mostFrequentDescriptionNames[1],
+              label: mostFrequentDescriptionNames[1],
+              value: sortedBreaches[1][1],
+              color: "hsl(162, 70%, 50%)",
+            },
+            {
+              id: mostFrequentDescriptionNames[2],
+              label: mostFrequentDescriptionNames[2],
+              value: sortedBreaches[2][1],
+              color: "hsl(291, 70%, 50%)",
+            },
+            {
+              id: mostFrequentDescriptionNames[3],
+              label: mostFrequentDescriptionNames[3],
+              value: sortedBreaches[3][1],
+              color: "hsl(229, 70%, 50%)",
+            },
+            {
+              id: mostFrequentDescriptionNames[4],
+              label: mostFrequentDescriptionNames[4],
+              value: sortedBreaches[4][1],
+              color: "hsl(344, 70%, 50%)",
+            },
+          ]);
+        })
+      .catch(error => {
+      console.error(error);
+      });
+  }, []);
+
   return (
     <ResponsivePie
-      data={data}
+      data={graph}
       theme={{
         axis: {
           domain: {
