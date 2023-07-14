@@ -4,6 +4,7 @@ import { useEffect, useState, useContext, useRef } from "react";
 import { tokens } from "../../theme";
 import ProjectContext from "../../context/ProjectContext";
 import BotContext from "../../context/BotContext";
+import BreachModal from "../breachModal";
 
 import axios from "axios";
 import Header from "../../components/Header";
@@ -13,11 +14,21 @@ const URL = 'http://localhost:5000';
 const Team = () => {
   const isFirstRender = useRef(true);
   const { updateData } = useContext(BotContext);
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { projectId } = useContext(ProjectContext);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
 
   const columns = [
     { field: "worker_id", headerName: "Worker ID" },
@@ -35,6 +46,12 @@ const Team = () => {
   const [selectedStartDate, setSelectedStartDate] = useState("");
   const [selectedEndDate, setSelectedEndDate] = useState("");
   const [topBreaches, setTopBreaches] = useState([]);
+
+  const handleRowClick = (params) => {
+    const rowData = params.row;
+    console.log("Clicked row data:", rowData);
+    openModal();
+  };
 
   useEffect(() => {
     axios
@@ -262,8 +279,10 @@ const Team = () => {
             { field: "name", sort: "asc" },
             { field: "breach", sort: "asc" },
           ]}
+          onRowClick={handleRowClick}
         />
       </Box>
+       <BreachModal closeModal={closeModal} isModalOpen={isModalOpen}/>
     </Box>
   );
 };
