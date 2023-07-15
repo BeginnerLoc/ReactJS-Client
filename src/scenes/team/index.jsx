@@ -202,7 +202,7 @@ const Team = () => {
 
   return (
     <Box m="20px">
-      <Header title="Breach Management Console" subtitle="Centralized Control for Effective Breach Handling" />
+      <Header title="Breach Management Console" subtitle="Centralized Monitoring for Effective Breach Handling" />
       <Box>
         <Typography variant="subtitle1">Filter by Name:</Typography>
         <select value={selectedFilter} onChange={handleFilterChange}>
@@ -215,13 +215,13 @@ const Team = () => {
         </select>
         <Typography variant="subtitle1">Filter by Date Range:</Typography>
         <input
-          type="text"
+          type="date"
           value={selectedStartDate}
           onChange={handleStartDateChange}
           placeholder="Start Date (YYYY-MM-DD)"
         />
         <input
-          type="text"
+          type="date"
           value={selectedEndDate}
           onChange={handleEndDateChange}
           placeholder="End Date (YYYY-MM-DD)"

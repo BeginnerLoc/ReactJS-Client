@@ -99,7 +99,7 @@ const Sidebar = () => {
               Data
             </Typography> */}
             <Item
-              title="Breaches' Details"
+              title="Breach Management"
               to="/team"
               icon={<InfoOutlinedIcon />}
               selected={selected}
