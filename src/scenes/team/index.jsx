@@ -5,6 +5,8 @@ import { tokens } from "../../theme";
 import ProjectContext from "../../context/ProjectContext";
 import BotContext from "../../context/BotContext";
 import BreachModal from "../breachModal";
+import { TextField, Autocomplete, MenuItem } from "@mui/material";
+import CheckIcon from "@mui/icons-material/Check"
 
 import axios from "axios";
 import Header from "../../components/Header";
@@ -40,7 +42,7 @@ const Team = () => {
   ];
 
   const [workerDetails, setWorkerDetails] = useState([]);
-  const [selectedFilter, setSelectedFilter] = useState("");
+  const [selectedFilter, setSelectedFilter] = useState([]);
   const [filteredWorkerDetails, setFilteredWorkerDetails] = useState([]);
   const [uniqueNames, setUniqueNames] = useState([]);
   const [selectedStartDate, setSelectedStartDate] = useState("");
@@ -107,7 +109,7 @@ const Team = () => {
           .catch((error) => {
             console.error(error);
           });
-      })
+      }) 
       .catch((error) => {
         console.error(error);
       });
@@ -122,10 +124,8 @@ const Team = () => {
     let filteredData = workerDetails;
 
     // Apply name filter
-    if (selectedFilter !== "") {
-      filteredData = filteredData.filter(
-        (worker) => worker.name === selectedFilter
-      );
+    if (selectedFilter.length > 0) {
+      filteredData = filteredData.filter((worker) => selectedFilter.includes(worker.name));
     }
 
     // Apply date range filter
@@ -151,7 +151,9 @@ const Team = () => {
     }
 
     setFilteredWorkerDetails(filteredData);
+
     updateData(filteredData)
+     
   }, [selectedFilter, selectedStartDate, selectedEndDate, workerDetails, topBreaches]);
 
   // Function to format date as "YYYY-MM-DD"
@@ -162,21 +164,19 @@ const Team = () => {
     return `${year}-${month}-${day}`;
   };
 
-  const handleFilterChange = (event) => {
-    const selectedValue = event.target.value;
-    setSelectedFilter(selectedValue);
-
-    // Filter the worker details based on the selected name
-    if (selectedValue !== "") {
-      const filteredData = workerDetails.filter(
-        (worker) => worker.name === selectedValue
-      );
+  const handleFilterChange = (event, selectedValues) => {
+    setSelectedFilter(selectedValues);
+  
+    // Filter the worker details based on the selected names
+    if (selectedValues.length > 0) {
+      const filteredData = workerDetails.filter((worker) => selectedValues.includes(worker.name));
       setFilteredWorkerDetails(filteredData);
     } else {
       // If no filter is selected, show all worker details
       setFilteredWorkerDetails(workerDetails);
     }
   };
+  
 
   const handleStartDateChange = (event) => {
     const selectedValue = event.target.value;
@@ -205,14 +205,35 @@ const Team = () => {
       <Header title="Breach Management Console" subtitle="Centralized Monitoring for Effective Breach Handling" />
       <Box>
         <Typography variant="subtitle1">Filter by Name:</Typography>
-        <select value={selectedFilter} onChange={handleFilterChange}>
-          <option value="">All</option>
-          {uniqueNames.map((name) => (
-            <option key={name} value={name}>
-              {name}
-            </option>
-          ))}
-        </select>
+        <Autocomplete
+          sx={{width: 500 }}
+          multiple
+          options={uniqueNames}
+          disableCloseOnSelect
+          value={selectedFilter}
+          onChange={(event, selectedValues) => setSelectedFilter(selectedValues)}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              variant="outlined"
+              // label="Filter by Name or Multiple"
+              placeholder="Select names"
+            />
+          )}
+
+          renderOption={(props, option, { selected }) => (
+            <MenuItem
+              {...props}
+              key={option}
+              value={option}
+              sx={{ justifyContent: "space-between" }}
+            >
+              {option}
+              {selected ? <CheckIcon color="info" /> : null}
+            </MenuItem>
+          )}
+
+        />
         <Typography variant="subtitle1">Filter by Date Range:</Typography>
         <input
           type="date"
@@ -263,7 +284,7 @@ const Team = () => {
             color: `${colors.greenAccent[200]} !important`,
           },
         }}
-      >
+      > 
         <DataGrid
           rows={filteredWorkerDetails}
           columns={columns}
