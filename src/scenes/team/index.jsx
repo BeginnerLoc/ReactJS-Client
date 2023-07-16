@@ -48,6 +48,9 @@ const Team = () => {
   const [selectedStartDate, setSelectedStartDate] = useState("");
   const [selectedEndDate, setSelectedEndDate] = useState("");
   const [topBreaches, setTopBreaches] = useState([]);
+  const [selectedBreaches, setSelectedBreaches] = useState([]);
+  const [uniqueBreaches, setUniqueBreaches] = useState([]);
+
 
   const handleRowClick = (params) => {
     const rowData = params.row;
@@ -69,6 +72,9 @@ const Team = () => {
           .get(`${URL}/api/${projectId}/indiv_breaches`)
           .then((breachesResponse) => {
             const breachesData = JSON.parse(breachesResponse.data);
+
+            const breaches = [...new Set(breachesData.map((breach) => breach.description))];
+            setUniqueBreaches(breaches);
 
             // Create separate rows for workers with breaches
             const rowsWithBreaches = [];
@@ -150,11 +156,17 @@ const Team = () => {
       );
     }
 
-    setFilteredWorkerDetails(filteredData);
+    // Apply breach filter
+    if (selectedBreaches.length > 0) {
+      filteredData = filteredData.filter((worker) =>
+        selectedBreaches.includes(worker.breach)
+      );
+    }
 
-    updateData(filteredData)
-     
-  }, [selectedFilter, selectedStartDate, selectedEndDate, workerDetails, topBreaches]);
+    setFilteredWorkerDetails(filteredData);
+    updateData(filteredData);
+
+  }, [selectedFilter, selectedStartDate, selectedEndDate, selectedBreaches, workerDetails, topBreaches]);
 
   // Function to format date as "YYYY-MM-DD"
   const formatDate = (date) => {
@@ -165,7 +177,9 @@ const Team = () => {
   };
 
   const handleFilterChange = (event, selectedValues) => {
+
     setSelectedFilter(selectedValues);
+    setSelectedBreaches(selectedValues);
   
     // Filter the worker details based on the selected names
     if (selectedValues.length > 0) {
@@ -175,9 +189,20 @@ const Team = () => {
       // If no filter is selected, show all worker details
       setFilteredWorkerDetails(workerDetails);
     }
+
+    // Filter the worker details based on the selected breaches
+    if (selectedValues.length > 0) {
+      const filteredData = workerDetails.filter((worker) =>
+        selectedValues.includes(worker.breach)
+      );
+      setFilteredWorkerDetails(filteredData);
+    } else {
+      // If no filter is selected, show all worker details
+      setFilteredWorkerDetails(workerDetails);
+    }
+
   };
   
-
   const handleStartDateChange = (event) => {
     const selectedValue = event.target.value;
     setSelectedStartDate(selectedValue);
@@ -198,13 +223,11 @@ const Team = () => {
     setTopBreaches(sortedBreaches);
   };
 
-
-
   return (
     <Box m="20px">
       <Header title="Breach Management Console" subtitle="Centralized Monitoring for Effective Breach Handling" />
       <Box>
-        <Typography variant="subtitle1">Filter by Name:</Typography>
+        {/* <Typography sx={{fontWeight: 'bold'}} variant="subtitle1">Filter by Name:</Typography> */}
         <Autocomplete
           sx={{width: 500 }}
           multiple
@@ -216,7 +239,7 @@ const Team = () => {
             <TextField
               {...params}
               variant="outlined"
-              // label="Filter by Name or Multiple"
+              label="Filter by name"
               placeholder="Select names"
             />
           )}
@@ -234,7 +257,39 @@ const Team = () => {
           )}
 
         />
-        <Typography variant="subtitle1">Filter by Date Range:</Typography>
+        
+        {/* <Typography sx={{fontWeight: 'bold', paddingTop: '10px'}} variant="subtitle1">Filter by Breach Type:</Typography> */}
+        <Autocomplete
+          sx={{width: 500, paddingTop: '20px'}}
+          multiple
+          options={uniqueBreaches}
+          disableCloseOnSelect
+          value={selectedBreaches}
+          onChange={(event, selectedValues) => setSelectedBreaches(selectedValues)}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              sx={{fontWeight: 'bold'}}
+              variant="outlined"
+              label ="Filter by breach"
+              placeholder="Select breaches"
+            />
+          )}
+
+          renderOption={(props, option, { selected }) => (
+            <MenuItem
+              {...props}
+              key={option}
+              value={option}
+              sx={{ justifyContent: "space-between" }}
+            >
+              {option}
+              {selected ? <CheckIcon color="info" /> : null}
+            </MenuItem>
+          )}
+        />
+
+        <Typography sx={{fontWeight: 'bold', paddingTop: '10px'}} variant="subtitle1">Filter by Date Range:</Typography>
         <input
           type="date"
           value={selectedStartDate}
@@ -247,7 +302,8 @@ const Team = () => {
           onChange={handleEndDateChange}
           placeholder="End Date (YYYY-MM-DD)"
         />
-        <Typography variant="subtitle1">Top % Breaches:</Typography>
+
+        <Typography sx={{fontWeight: 'bold', paddingTop: '10px'}} variant="subtitle1">Top % Breaches:</Typography>
         <input
           type="number"
           min="0"
@@ -255,9 +311,11 @@ const Team = () => {
           step="10"
           onChange={handleTopBreachesChange}
         />
+
       </Box>
       <Box
         m="10px 0 0 0"
+        paddingBottom={'20px'}
         height="50vh"
         sx={{
           "& .MuiDataGrid-root": {
@@ -308,4 +366,4 @@ const Team = () => {
   );
 };
 
-export default Team;
+export default Team; 
