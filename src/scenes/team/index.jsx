@@ -213,15 +213,15 @@ const Team = () => {
     setSelectedEndDate(selectedValue);
   };
 
-  const handleTopBreachesChange = (event) => {
-    const topBreachesCount = parseInt(event.target.value, 10);
-    const sortedBreaches = workerDetails
-      .slice()
-      .sort((a, b) => new Date(b.time.replace(" ", "T")) - new Date(a.time.replace(" ", "T")))
-      .slice(0, Math.ceil((topBreachesCount / 100) * workerDetails.length))
-      .map((worker) => worker.id);
-    setTopBreaches(sortedBreaches);
-  };
+  // const handleTopBreachesChange = (event) => {
+  //   const topBreachesCount = parseInt(event.target.value, 10);
+  //   const sortedBreaches = workerDetails
+  //     .slice()
+  //     .sort((a, b) => new Date(b.time.replace(" ", "T")) - new Date(a.time.replace(" ", "T")))
+  //     .slice(0, Math.ceil((topBreachesCount / 100) * workerDetails.length))
+  //     .map((worker) => worker.id);
+  //   setTopBreaches(sortedBreaches);
+  // };
 
   return (
     <Box m="20px">
@@ -303,14 +303,14 @@ const Team = () => {
           placeholder="End Date (YYYY-MM-DD)"
         />
 
-        <Typography sx={{fontWeight: 'bold', paddingTop: '10px'}} variant="subtitle1">Top % Breaches:</Typography>
+        {/* <Typography sx={{fontWeight: 'bold', paddingTop: '10px'}} variant="subtitle1">Top % Breaches:</Typography>
         <input
           type="number"
           min="0"
           max="100"
           step="10"
           onChange={handleTopBreachesChange}
-        />
+        /> */}
 
       </Box>
       <Box
