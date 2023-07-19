@@ -4,16 +4,16 @@ import { useNavigate } from 'react-router-dom';
 import ProjectContext from '../../context/ProjectContext';
 
 const ProjectModal = () => {
-  const { projectId, updateProjectId } = useContext(ProjectContext);
+  const { updateProjectId } = useContext(ProjectContext);
   const navigate = useNavigate();
 
   const [open, setOpen] = useState(true);
   const [selectedProject, setSelectedProject] = useState('');
 
   const projectOptions = [
-    { id: 1, name: 'Project A' },
-    { id: 2, name: 'Project B' },
-    { id: 3, name: 'Project C' },
+    { id: 1, name: 'Site A' },
+    { id: 2, name: 'Site B' },
+    { id: 3, name: 'Site C' },
   ];
 
   const handleOpen = () => {
@@ -51,17 +51,17 @@ const ProjectModal = () => {
     <div>
       <Button onClick={handleOpen}>Open Modal</Button>
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-        <DialogTitle>Select Project</DialogTitle>
+        <DialogTitle>Select a Site</DialogTitle>
         <DialogContent>
           <FormControl fullWidth>
-            <InputLabel id="project-label">Project</InputLabel>
+            <InputLabel id="project-label">Site</InputLabel>
             <Select
               labelId="project-label"
               id="project-select"
               value={selectedProject}
               onChange={handleProjectChange}
             >
-              <MenuItem value="">Select a project</MenuItem>
+              <MenuItem value="">Select a Site</MenuItem>
               {projectOptions.map((project) => (
                 <MenuItem key={project.id} value={project.name}>
                   {project.name}
