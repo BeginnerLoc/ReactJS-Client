@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 import "react-pro-sidebar/dist/css/styles.css";
 import { tokens } from "../../theme";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
-import ContactsOutlinedIcon from "@mui/icons-material/ContactsOutlined";
 import ArrowCircleDownOutlinedIcon from '@mui/icons-material/ArrowCircleDownOutlined';
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
@@ -102,13 +101,6 @@ const Sidebar = () => {
               title="Breach Management"
               to="/team"
               icon={<InfoOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Workers Information"
-              to="/contacts"
-              icon={<ContactsOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
