@@ -6,13 +6,15 @@ import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined'
 import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined'
 import NotificationstModeOutlinedIcon from '@mui/icons-material/NotificationsOutlined'
 import SettingsModeOutlinedIcon from '@mui/icons-material/SettingsOutlined'
-import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined'
+import WysiwygIcon from '@mui/icons-material/Wysiwyg';
 import SearchIcon from '@mui/icons-material/Search'
+import { useNavigate } from 'react-router-dom';
 
 const Topbar = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const colorMode = useContext(ColorModeContext);
+    const navigate = useNavigate();
 
     return (
         <Box display="flex" justifyContent="space-between" p={2}>
@@ -45,7 +47,7 @@ const Topbar = () => {
                     <SettingsModeOutlinedIcon />
                 </IconButton>
                 <IconButton>
-                    <PersonOutlinedIcon />
+                    <WysiwygIcon onClick={() => navigate('/')} />
                 </IconButton>
             </Box>
         </Box>
