@@ -46,8 +46,8 @@ const Topbar = () => {
                 <IconButton>
                     <SettingsModeOutlinedIcon />
                 </IconButton>
-                <IconButton>
-                    <WysiwygIcon onClick={() => navigate('/')} />
+                <IconButton  onClick={() => navigate('/')} >
+                    <WysiwygIcon/>
                 </IconButton>
             </Box>
         </Box>
