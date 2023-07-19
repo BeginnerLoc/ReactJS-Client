@@ -126,14 +126,14 @@ const Team = () => {
       isFirstRender.current = false;
       return;
     }
-
+  
     let filteredData = workerDetails;
-
+  
     // Apply name filter
     if (selectedFilter.length > 0) {
       filteredData = filteredData.filter((worker) => selectedFilter.includes(worker.name));
     }
-
+  
     // Apply date range filter
     if (selectedStartDate !== "" && selectedEndDate !== "") {
       filteredData = filteredData.filter((worker) => {
@@ -148,26 +148,28 @@ const Team = () => {
         );
       });
     }
-
+  
     // Sort the filtered data by date, name, or breach time
     if (topBreaches.length > 0) {
       filteredData = filteredData.filter((worker) =>
         topBreaches.includes(worker.id)
       );
     }
-
+  
     // Apply breach filter
     if (selectedBreaches.length > 0) {
       filteredData = filteredData.filter((worker) =>
         selectedBreaches.includes(worker.breach)
       );
     }
-
+  
+    // Filter out workers who haven't breached
+    filteredData = filteredData.filter((worker) => worker.breach !== "");
+  
     setFilteredWorkerDetails(filteredData);
     updateData(filteredData);
-
   }, [selectedFilter, selectedStartDate, selectedEndDate, selectedBreaches, workerDetails, topBreaches]);
-
+  
   // Function to format date as "YYYY-MM-DD"
   const formatDate = (date) => {
     const year = date.getFullYear();
