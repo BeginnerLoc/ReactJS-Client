@@ -316,7 +316,7 @@ const Team = () => {
       <Box
         m="10px 0 0 0"
         paddingBottom={'20px'}
-        height="50vh"
+        height="40vh"
         sx={{
           "& .MuiDataGrid-root": {
             border: "none",
@@ -352,12 +352,12 @@ const Team = () => {
           components={{
             Toolbar: GridToolbar, // Add a toolbar to the grid
           }}
-          sortModel={[
-            // Enable sorting by date, name, and breach time
-            { field: "time", sort: "asc" },
-            { field: "name", sort: "asc" },
-            { field: "breach", sort: "asc" },
-          ]}
+          // sortModel={[
+          //   // Enable sorting by date, name, and breach time
+          //   { field: "time", sort: "asc" },
+          //   { field: "name", sort: "asc" }, 
+          //   { field: "breach", sort: "asc" },
+          // ]}
           onRowClick={handleRowClick}
         />
       </Box>
