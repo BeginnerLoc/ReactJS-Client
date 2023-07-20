@@ -6,7 +6,7 @@ import axios from 'axios';
 const BotProvider = ({ children }) => {
   const [filteredData, setFilteredData] = useState([]);
   const [topBreachData, setTopBreachData] = useState([])
-  const [botAnswer, setBotAnswer] = useState("Ni Hao");
+  const [botAnswer, setBotAnswer] = useState(null);
 
   const updateData = (newData) => {
     if (newData.length !== 0 && newData.length < 50) {

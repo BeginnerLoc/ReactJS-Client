@@ -6,10 +6,10 @@ import ProjectContext from "../../context/ProjectContext";
 import BotContext from "../../context/BotContext";
 import BreachModal from "../breachModal";
 import { TextField, Autocomplete, MenuItem } from "@mui/material";
-import CheckIcon from "@mui/icons-material/Check"
-
+import CheckIcon from "@mui/icons-material/Check";
 import axios from "axios";
 import Header from "../../components/Header";
+import AiAssistant from "../../components/AiAssistant";
 
 const URL = 'http://localhost:5000';
 
@@ -115,7 +115,7 @@ const Team = () => {
           .catch((error) => {
             console.error(error);
           });
-      }) 
+      })
       .catch((error) => {
         console.error(error);
       });
@@ -126,14 +126,14 @@ const Team = () => {
       isFirstRender.current = false;
       return;
     }
-  
+
     let filteredData = workerDetails;
-  
+
     // Apply name filter
     if (selectedFilter.length > 0) {
       filteredData = filteredData.filter((worker) => selectedFilter.includes(worker.name));
     }
-  
+
     // Apply date range filter
     if (selectedStartDate !== "" && selectedEndDate !== "") {
       filteredData = filteredData.filter((worker) => {
@@ -148,28 +148,28 @@ const Team = () => {
         );
       });
     }
-  
+
     // Sort the filtered data by date, name, or breach time
     if (topBreaches.length > 0) {
       filteredData = filteredData.filter((worker) =>
         topBreaches.includes(worker.id)
       );
     }
-  
+
     // Apply breach filter
     if (selectedBreaches.length > 0) {
       filteredData = filteredData.filter((worker) =>
         selectedBreaches.includes(worker.breach)
       );
     }
-  
+
     // Filter out workers who haven't breached
     filteredData = filteredData.filter((worker) => worker.breach !== "");
-  
+
     setFilteredWorkerDetails(filteredData);
     updateData(filteredData);
   }, [selectedFilter, selectedStartDate, selectedEndDate, selectedBreaches, workerDetails, topBreaches]);
-  
+
   // Function to format date as "YYYY-MM-DD"
   const formatDate = (date) => {
     const year = date.getFullYear();
@@ -182,7 +182,7 @@ const Team = () => {
 
     setSelectedFilter(selectedValues);
     setSelectedBreaches(selectedValues);
-  
+
     // Filter the worker details based on the selected names
     if (selectedValues.length > 0) {
       const filteredData = workerDetails.filter((worker) => selectedValues.includes(worker.name));
@@ -204,7 +204,7 @@ const Team = () => {
     }
 
   };
-  
+
   const handleStartDateChange = (event) => {
     const selectedValue = event.target.value;
     setSelectedStartDate(selectedValue);
@@ -228,84 +228,92 @@ const Team = () => {
   return (
     <Box m="20px">
       <Header title="Breach Management Console" subtitle="Centralized Monitoring for Effective Breach Handling" />
-      <Box>
-        {/* <Typography sx={{fontWeight: 'bold'}} variant="subtitle1">Filter by Name:</Typography> */}
-        <Autocomplete
-          sx={{width: 500 }}
-          multiple
-          options={uniqueNames}
-          disableCloseOnSelect
-          value={selectedFilter}
-          onChange={(event, selectedValues) => setSelectedFilter(selectedValues)}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              variant="outlined"
-              label="Filter by name"
-              placeholder="Select names"
-            />
-          )}
+      <Box sx={{
+        flexDirection: 'row',
+        display: 'flex'
+      }}>
+        <Box
+          sx={{
+            display: 'inline-block',
+          }}
+        >
+          {/* <Typography sx={{fontWeight: 'bold'}} variant="subtitle1">Filter by Name:</Typography> */}
+          <Autocomplete
+            sx={{ width: 500 }}
+            multiple
+            options={uniqueNames}
+            disableCloseOnSelect
+            value={selectedFilter}
+            onChange={(event, selectedValues) => setSelectedFilter(selectedValues)}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                variant="outlined"
+                label="Filter by name"
+                placeholder="Select names"
+              />
+            )}
 
-          renderOption={(props, option, { selected }) => (
-            <MenuItem
-              {...props}
-              key={option}
-              value={option}
-              sx={{ justifyContent: "space-between" }}
-            >
-              {option}
-              {selected ? <CheckIcon color="info" /> : null}
-            </MenuItem>
-          )}
+            renderOption={(props, option, { selected }) => (
+              <MenuItem
+                {...props}
+                key={option}
+                value={option}
+                sx={{ justifyContent: "space-between" }}
+              >
+                {option}
+                {selected ? <CheckIcon color="info" /> : null}
+              </MenuItem>
+            )}
 
-        />
-        
-        {/* <Typography sx={{fontWeight: 'bold', paddingTop: '10px'}} variant="subtitle1">Filter by Breach Type:</Typography> */}
-        <Autocomplete
-          sx={{width: 500, paddingTop: '20px'}}
-          multiple
-          options={uniqueBreaches}
-          disableCloseOnSelect
-          value={selectedBreaches}
-          onChange={(event, selectedValues) => setSelectedBreaches(selectedValues)}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              sx={{fontWeight: 'bold'}}
-              variant="outlined"
-              label ="Filter by breach"
-              placeholder="Select breaches"
-            />
-          )}
+          />
 
-          renderOption={(props, option, { selected }) => (
-            <MenuItem
-              {...props}
-              key={option}
-              value={option}
-              sx={{ justifyContent: "space-between" }}
-            >
-              {option}
-              {selected ? <CheckIcon color="info" /> : null}
-            </MenuItem>
-          )}
-        />
+          {/* <Typography sx={{fontWeight: 'bold', paddingTop: '10px'}} variant="subtitle1">Filter by Breach Type:</Typography> */}
+          <Autocomplete
+            sx={{ width: 500, paddingTop: '20px' }}
+            multiple
+            options={uniqueBreaches}
+            disableCloseOnSelect
+            value={selectedBreaches}
+            onChange={(event, selectedValues) => setSelectedBreaches(selectedValues)}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                sx={{ fontWeight: 'bold' }}
+                variant="outlined"
+                label="Filter by breach"
+                placeholder="Select breaches"
+              />
+            )}
 
-        <Typography sx={{fontWeight: 'bold', paddingTop: '10px'}} variant="subtitle1">Filter by Date Range:</Typography>
-        <input
-          type="date"
-          value={selectedStartDate}
-          onChange={handleStartDateChange}
-          placeholder="Start Date (YYYY-MM-DD)"
-        />
-        <input
-          type="date"
-          value={selectedEndDate}
-          onChange={handleEndDateChange}
-          placeholder="End Date (YYYY-MM-DD)"
-        />
+            renderOption={(props, option, { selected }) => (
+              <MenuItem
+                {...props}
+                key={option}
+                value={option}
+                sx={{ justifyContent: "space-between" }}
+              >
+                {option}
+                {selected ? <CheckIcon color="info" /> : null}
+              </MenuItem>
+            )}
+          />
 
-        {/* <Typography sx={{fontWeight: 'bold', paddingTop: '10px'}} variant="subtitle1">Top % Breaches:</Typography>
+          <Typography sx={{ fontWeight: 'bold', paddingTop: '10px' }} variant="subtitle1">Filter by Date Range:</Typography>
+          <input
+            type="date"
+            value={selectedStartDate}
+            onChange={handleStartDateChange}
+            placeholder="Start Date (YYYY-MM-DD)"
+          />
+          <input
+            type="date"
+            value={selectedEndDate}
+            onChange={handleEndDateChange}
+            placeholder="End Date (YYYY-MM-DD)"
+          />
+
+          {/* <Typography sx={{fontWeight: 'bold', paddingTop: '10px'}} variant="subtitle1">Top % Breaches:</Typography>
         <input
           type="number"
           min="0"
@@ -314,6 +322,15 @@ const Team = () => {
           onChange={handleTopBreachesChange}
         /> */}
 
+        </Box>
+        <Box
+          sx={{
+            display: 'inline-block',
+            marginLeft: 2,
+            width: '100%'
+          }}>
+            <AiAssistant/>
+        </Box>
       </Box>
       <Box
         m="10px 0 0 0"
@@ -344,7 +361,7 @@ const Team = () => {
             color: `${colors.greenAccent[200]} !important`,
           },
         }}
-      > 
+      >
         <DataGrid
           rows={filteredWorkerDetails}
           columns={columns}
@@ -363,7 +380,7 @@ const Team = () => {
           onRowClick={handleRowClick}
         />
       </Box>
-       <BreachModal closeModal={closeModal} isModalOpen={isModalOpen}/>
+      <BreachModal closeModal={closeModal} isModalOpen={isModalOpen} />
     </Box>
   );
 };
