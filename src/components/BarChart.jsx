@@ -3,6 +3,8 @@ import { ResponsiveBar } from "@nivo/bar";
 import { tokens } from "../theme";
 import ProjectContext from "../context/ProjectContext";
 // import { mockBarData as data } from "../data/mockData";
+import BotContext from "../context/BotContext"
+
 
 import { useState, useEffect, React, useContext } from "react";
 import axios from 'axios';
@@ -11,6 +13,8 @@ const URL = 'http://localhost:5000'
 
 const BarChart = ({ isDashboard = false }) => {
   const { projectId } = useContext(ProjectContext);
+  const { updateTopBreachData } = useContext(BotContext);
+
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
@@ -60,8 +64,7 @@ const BarChart = ({ isDashboard = false }) => {
               }, {});
             return { workerName, count, descriptions };
           });
-          const sortedBreachesByWorker = breachesByWorker.sort((a, b) => a.count - b.count);
-
+          breachesByWorker.sort((a, b) => a.count - b.count);
           setGraph([
             {
 
@@ -130,6 +133,13 @@ const BarChart = ({ isDashboard = false }) => {
       console.error(error);
       });
   }, []);
+
+  useEffect(() => {
+    if (graph.length > 0) {
+      // updateTopBreachData(graph);
+      console.log(graph);
+    }
+  }, [graph]);
 
   return (
     <ResponsiveBar
