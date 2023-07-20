@@ -372,7 +372,7 @@ const Team = () => {
           rowsPerPageOptions={[10]}
           disableSelectionOnClick
           components={{
-            Toolbar: GridToolbar, // Add a toolbar to the grid
+            Toolbar: GridToolbar // Add a toolbar to the grid
           }}
           // sortModel={[
           //   // Enable sorting by date, name, and breach time

@@ -6,6 +6,10 @@ const BreachModal = ({ closeModal, isModalOpen, selectedBreachId }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [imageData, setImageData] = useState(""); // State to hold the base64 image data
+  const [workerNameData, setworkerNameData] = useState(""); // State to hold the base64 image data
+  const [descriptionData, setdescriptionData] = useState(""); // State to hold the base64 image data
+  const [breachIDData, setbreachIDData] = useState(""); // State to hold the base64 image data
+  const [locationData, setlocationData] = useState(""); // State to hold the base64 image data
   const URL = 'http://localhost:5000';
 
   useEffect(() => {
@@ -16,12 +20,17 @@ const BreachModal = ({ closeModal, isModalOpen, selectedBreachId }) => {
   }, [isModalOpen, selectedBreachId]);
 
   const fetchImage = (breachId) => {
-    // Make a GET request to the API to fetch the image data
+    // Make a GET request to the API to fetch the image data and worker's data
     fetch(`${URL}/api/2/get_breach_image/${breachId}`)
       .then((response) => response.json())
       .then((data) => {
-        // Update the imageData state with the fetched base64 image data
+        
         setImageData(data.image);
+        setworkerNameData(data.worker_name);
+        setdescriptionData(data.description);
+        setbreachIDData(data.breach_id);
+        setlocationData(data.location);
+
       })
       .catch((error) => {
         console.error("Error fetching image data:", error);
@@ -40,33 +49,39 @@ const BreachModal = ({ closeModal, isModalOpen, selectedBreachId }) => {
       aria-labelledby="modal-title"
       aria-describedby="modal-description"
     >
-      <Paper
-        style={{
-          backgroundColor: colors.blueAccent[700], 
-          boxShadow: "0 3px 5px rgba(0, 0, 0, 0.2)",
-          padding: "16px",
-          outline: "none",
-          width: "400px",
-          maxWidth: "90%",
-          textAlign: "center",
-        }}
-      >
-        <h2 id="modal-title">Modal Title</h2>
+    <Paper
+      style={{
+        backgroundColor: colors.blueAccent[900],
+        boxShadow: "0 3px 5px rgba(0, 0, 0, 0.2)",
+        padding: "16px",
+        outline: "none",
+        display: "flex", // Use flex display to arrange elements horizontally
+        alignItems: "center" // Vertically align elements in the center
+      }}
+    >
+      <div style={{ flex: 1 }}>
         {/* Display the image only when imageData is available */}
         {imageData && (
           <img
-            src={`data:image/jpg;base64,${imageData}`} // Replace "png" with the correct image format if needed
+            src={`data:image/jpg;base64,${imageData}`}
             alt="Breach Evidence"
             style={{ maxWidth: "100%", height: "auto" }}
           />
         )}
+      </div> 
 
+      <div style={{ flex: 1, marginLeft: "100px" }}>
+        <h2 id="modal-title">BREACH EVIDENCE</h2>
+        <p id="modal-worker_name"><b>Name: </b>{workerNameData}</p>
+        <p id="modal-description"><b>Breach Type: </b> {descriptionData}</p>
+        <p id="modal-location"><b>Location: </b> {locationData}</p>
 
-        <p id="modal-description">Breach ID: {selectedBreachId}</p>
         <Button variant="contained" onClick={closeModal}>
           Close
         </Button>
-      </Paper>
+
+      </div>
+    </Paper>
     </Modal>
   );
 };
