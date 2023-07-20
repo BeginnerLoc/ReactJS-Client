@@ -1,4 +1,4 @@
-import { Box, IconButton, useTheme } from '@mui/material';
+import { Box, IconButton, Typography, useTheme } from '@mui/material';
 import { useContext } from 'react';
 import { ColorModeContext, tokens } from '../../theme';
 import InputBase from '@mui/material/InputBase';
@@ -9,12 +9,16 @@ import SettingsModeOutlinedIcon from '@mui/icons-material/SettingsOutlined'
 import WysiwygIcon from '@mui/icons-material/Wysiwyg';
 import SearchIcon from '@mui/icons-material/Search'
 import { useNavigate } from 'react-router-dom';
+import ProjectContext from '../../context/ProjectContext';
 
 const Topbar = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const colorMode = useContext(ColorModeContext);
     const navigate = useNavigate();
+
+    const { projectName } = useContext(ProjectContext);
+
 
     return (
         <Box display="flex" justifyContent="space-between" p={2}>
@@ -29,6 +33,17 @@ const Topbar = () => {
                 </IconButton>
             </Box>
 
+            <Box
+                display="flex"
+                flexDirection="row"
+                width={100}
+                justifyContent="space-between"
+            >
+                <Typography sx={{ fontWeight: 'bold' }} variant="subtitle1">Current:</Typography>
+                <Typography color={'red'} sx={{ fontWeight: 'bold' }} variant="subtitle1">{projectName}</Typography>
+            </Box>
+
+
             {/* icon */}
             <Box display="flex">
                 <IconButton onClick={colorMode.toggleColorMode}>
@@ -36,7 +51,7 @@ const Topbar = () => {
                         <DarkModeOutlinedIcon />
 
                     ) : (
-                        <LightModeOutlinedIcon/>
+                        <LightModeOutlinedIcon />
                     )
                     }
                 </IconButton>
@@ -46,8 +61,8 @@ const Topbar = () => {
                 <IconButton>
                     <SettingsModeOutlinedIcon />
                 </IconButton>
-                <IconButton  onClick={() => navigate('/')} >
-                    <WysiwygIcon/>
+                <IconButton onClick={() => navigate('/')} >
+                    <WysiwygIcon />
                 </IconButton>
             </Box>
         </Box>
