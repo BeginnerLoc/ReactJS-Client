@@ -37,6 +37,7 @@ const Team = () => {
     { field: "name", headerName: "Name", flex: 1 },
     { field: "position", headerName: "Position", flex: 1 },
     { field: "supervisor", headerName: "Supervisor", flex: 1 },
+    { field: "breach_id", headerName: "Breach ID", flex: 1 },
     { field: "breach", headerName: "Breach", flex: 1 },
     { field: "time", headerName: "Time", flex: 1 },
   ];
@@ -50,11 +51,12 @@ const Team = () => {
   const [topBreaches, setTopBreaches] = useState([]);
   const [selectedBreaches, setSelectedBreaches] = useState([]);
   const [uniqueBreaches, setUniqueBreaches] = useState([]);
-
+  const [selectedBreachId, setSelectedBreachId] = useState(null);
 
   const handleRowClick = (params) => {
     const rowData = params.row;
     console.log("Clicked row data:", rowData);
+    setSelectedBreachId(rowData.breach_id);
     openModal();
   };
 
@@ -90,6 +92,7 @@ const Team = () => {
                     name: worker.name,
                     position: worker.position,
                     supervisor: worker.supervisor,
+                    breach_id: breach.breach_id,
                     breach: breach.description,
                     time: breach.datetime,
                     id: `${worker.worker_id}-${breach._id}`, // Assign unique identifier using worker_id and breach _id
@@ -363,7 +366,7 @@ const Team = () => {
           onRowClick={handleRowClick}
         />
       </Box>
-       <BreachModal closeModal={closeModal} isModalOpen={isModalOpen}/>
+       <BreachModal closeModal={closeModal} isModalOpen={isModalOpen} selectedBreachId={selectedBreachId}/>
     </Box>
   );
 };
