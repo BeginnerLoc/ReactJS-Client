@@ -33,7 +33,16 @@ const Topbar = () => {
                 </IconButton>
             </Box>
 
-            <Typography sx={{fontWeight: 'bold'}} variant="subtitle1">{projectName}</Typography>
+            <Box
+                display="flex"
+                flexDirection="row"
+                width={100}
+                justifyContent="space-between"
+            >
+                <Typography sx={{ fontWeight: 'bold' }} variant="subtitle1">Current:</Typography>
+                <Typography color={'red'} sx={{ fontWeight: 'bold' }} variant="subtitle1">{projectName}</Typography>
+            </Box>
+
 
             {/* icon */}
             <Box display="flex">
