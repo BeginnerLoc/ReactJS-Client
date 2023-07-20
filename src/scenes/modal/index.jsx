@@ -37,7 +37,7 @@ const ProjectModal = () => {
 
       // Update the project ID in the context
       if (selectedProjectObj) {
-        updateProjectId(selectedProjectObj.id);
+        updateProjectId(selectedProjectObj.id, selectedProjectObj.name);
       }
 
       setOpen(false);
