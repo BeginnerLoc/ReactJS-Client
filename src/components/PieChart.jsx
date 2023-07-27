@@ -35,39 +35,35 @@ const PieChart = () => {
           // // Get the description names of the most frequent breaches
           const mostFrequentDescriptionNames = sortedBreaches.map(entry => entry[0]);
 
-          setGraph([
-            {
-              id: mostFrequentDescriptionNames[0],
-              label: mostFrequentDescriptionNames[0],
-              value: sortedBreaches[0][1],
-              color: "hsl(104, 70%, 50%)",
-            },
-            {
-              id: mostFrequentDescriptionNames[1],
-              label: mostFrequentDescriptionNames[1],
-              value: sortedBreaches[1][1],
-              color: "hsl(162, 70%, 50%)",
-            },
-            {
-              id: mostFrequentDescriptionNames[2],
-              label: mostFrequentDescriptionNames[2],
-              value: sortedBreaches[2][1],
-              color: "hsl(291, 70%, 50%)",
-            },
-            {
-              id: mostFrequentDescriptionNames[3],
-              label: mostFrequentDescriptionNames[3],
-              value: sortedBreaches[3][1],
-              color: "hsl(229, 70%, 50%)",
-            },
-            {
-              id: mostFrequentDescriptionNames[4],
-              label: mostFrequentDescriptionNames[4],
-              value: sortedBreaches[4][1],
-              color: "hsl(344, 70%, 50%)",
-            },
-          ]);
-        })
+          // Initialize an empty array to store the graph data
+          const graphData = [];
+
+          // Loop through the mostFrequentDescriptionNames array
+          for (let i = 0; i < mostFrequentDescriptionNames.length; i++) {
+            // Get the current description name and its count
+            const descriptionName = mostFrequentDescriptionNames[i];
+            const count = sortedBreaches[i][1];
+
+            // Define the color based on the index (you can use your own color logic here)
+            const colorIndex = i % colors.length;
+            const color = colors[colorIndex];
+
+            // Create an object representing the data for the current description name
+            const dataItem = {
+              id: descriptionName,
+              label: descriptionName,
+              value: count,
+              color: color,
+            };
+
+            // Add the dataItem to the graphData array
+            graphData.push(dataItem);
+          }
+
+          // Now you can set the graph data using the graphData array
+          setGraph(graphData);
+          })
+          
       .catch(error => {
       console.error(error);
       });

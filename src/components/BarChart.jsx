@@ -67,7 +67,6 @@ const BarChart = ({ isDashboard = false }) => {
           breachesByWorker.sort((a, b) => a.count - b.count);
           setGraph([
             {
-
               country: breachesByWorker[0].workerName,
               [Object.keys(breachesByWorker[0].descriptions)[0]]: breachesByWorker[0].descriptions[Object.keys(breachesByWorker[0].descriptions)[0]],
               "hot dogColor": "hsl(229, 70%, 50%)",
