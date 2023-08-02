@@ -1,4 +1,4 @@
-import { Box, Button, useTheme, FormControl, FormControlLabel, Checkbox, Select, MenuItem } from "@mui/material";
+import { Box, Button, useTheme, FormControl, FormControlLabel, Radio } from "@mui/material";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
 import { tokens } from "../../theme";
 import React, { useState, useEffect, useContext } from "react";
@@ -17,20 +17,10 @@ const Download = () => {
   const [reportType, setReportType] = useState('');
   const [days, setDays] = useState('');
 
-  const [checkedItems, setCheckedItems] = useState([]);
-
-  const handleCheckboxChange = (event) => {
-    const { name, checked } = event.target;
-  
-    // Update the checkedItems state
-    if (checked) {
-      setCheckedItems([...checkedItems, name]);
-    } else {
-      setCheckedItems(checkedItems.filter((item) => item !== name));
-    }
-  
+  const handleRadioButtonChange = (event) => {
+    const { value } = event.target;
     // Update the reportType state
-    setReportType(name);
+    setReportType(value);
   };
 
   const handleDownload = () => {
@@ -65,34 +55,33 @@ const Download = () => {
     <Box m="20px">
       <Header title="Download" subtitle="Downloading PDF Report" />
       <Box m="20px">
-      
         {/* Report Type */}
         <Box sx={{ marginRight: '10px' }}>
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={checkedItems.includes('incidents')}
-              onChange={handleCheckboxChange}
-              name="incidents"
-              color="success"
-              value="incidents"
+          <FormControl component="fieldset">
+            <FormControlLabel
+              control={
+                <Radio
+                  checked={reportType === 'incidents'}
+                  onChange={handleRadioButtonChange}
+                  value="incidents"
+                  color="success"
+                />
+              }
+              label="Hazards"
             />
-          }
-          label="Incidents"
-        />
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={checkedItems.includes('breaches')}
-              onChange={handleCheckboxChange}
-              name="breaches"
-              color="success"
-              value="breaches"
+            <FormControlLabel
+              control={
+                <Radio
+                  checked={reportType === 'breaches'}
+                  onChange={handleRadioButtonChange}
+                  value="breaches"
+                  color="success"
+                />
+              }
+              label="Breaches"
             />
-          }
-          label="Breaches"
-        />
-      </Box>
+          </FormControl>
+        </Box>
 
         {/* Date Range Selector */}
         <div>
@@ -105,15 +94,15 @@ const Download = () => {
         <div style={{ paddingBottom: '10px' }}>
           <label htmlFor="End" style={{ fontSize: '16px', paddingLeft: '5px', paddingRight: '11px' }}>End:</label>
           <input type="date" id="End" name="End Date" />
-        </div>  
-        
+        </div>
+
         {/* Download Button */}
         <Button
           variant="contained"
           color="primary"
           size="large"
           startIcon={<DownloadOutlinedIcon />}
-          onClick={() => handleDownload()}
+          onClick={handleDownload}
         >
           Download Report
         </Button>
