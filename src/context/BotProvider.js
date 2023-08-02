@@ -52,8 +52,24 @@ const BotProvider = ({ children }) => {
 
   };
 
+  const messageChatgpt = async (messages, newMessage) => {
+    try {
+      const response = await axios.post('http://localhost:5000/message_chatgpt', {
+        messages: messages,
+        new_message: newMessage
+      });
+
+      var answer = response.data.answer;
+      setBotAnswer(answer)
+      console.log('Answer:', answer);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+
+  };
+
   return (
-    <BotContext.Provider value={{ filteredData, updateData, botAnswer, updateTopBreachData }}>
+    <BotContext.Provider value={{ filteredData, updateData, botAnswer, updateTopBreachData, messageChatgpt }}>
       {children}
     </BotContext.Provider>
   );

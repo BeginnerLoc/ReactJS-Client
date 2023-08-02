@@ -15,7 +15,9 @@ const AiAssistant = () => {
 
   useEffect(() => {
     // Simulating loading messages from an API or delay before displaying
-    setMessages([...messages, { text: botAnswer, sender: 'bot' }]);
+    if(botAnswer != null){
+      setMessages([...messages, { text: botAnswer, sender: 'bot' }]);
+    }
     setShowChat(true);
   }, [botAnswer]);
 
