@@ -15,11 +15,12 @@ const ChatMessageBox = () => {
   const [messages, setMessages] = useState([]);
   const [showChat, setShowChat] = useState(false);
 
-  const { botAnswer } = useContext(BotContext);
+  const { botAnswer, messageChatgpt } = useContext(BotContext);
 
   useEffect(() => {
-    // Simulating loading messages from an API or delay before displaying
-    setMessages([...messages, { text: botAnswer, sender: 'bot' }]);
+    if(botAnswer != null){
+      setMessages([...messages, { text: botAnswer, sender: 'bot' }]);
+    }
     setShowChat(true);
   }, [botAnswer]);
 
@@ -28,6 +29,7 @@ const ChatMessageBox = () => {
     const newMessage = e.target.message.value;
     setMessages([...messages, { text: newMessage, sender: 'user' }]);
     e.target.message.value = '';
+    messageChatgpt(messages, newMessage)
   };
 
   const chatMessageBoxStyle = {

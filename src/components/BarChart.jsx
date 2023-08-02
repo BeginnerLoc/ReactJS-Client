@@ -135,8 +135,7 @@ const BarChart = ({ isDashboard = false }) => {
 
   useEffect(() => {
     if (graph.length > 0) {
-      // updateTopBreachData(graph);
-      console.log(graph);
+      updateTopBreachData(graph);
     }
   }, [graph]);
 
