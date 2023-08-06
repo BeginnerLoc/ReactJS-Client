@@ -31,7 +31,7 @@ const Team = () => {
     setIsModalOpen(false);
   };
 
-
+  // Defining Columns for DataGrid
   const columns = [
     { field: "worker_id", headerName: "Worker ID" },
     { field: "name", headerName: "Name", flex: 1 },
@@ -42,6 +42,7 @@ const Team = () => {
     { field: "time", headerName: "Time", flex: 1 },
   ];
 
+  // Setting up state variables (hold data & filter values)
   const [workerDetails, setWorkerDetails] = useState([]);
   const [selectedFilter, setSelectedFilter] = useState([]);
   const [filteredWorkerDetails, setFilteredWorkerDetails] = useState([]);
@@ -52,7 +53,7 @@ const Team = () => {
   const [selectedBreaches, setSelectedBreaches] = useState([]);
   const [uniqueBreaches, setUniqueBreaches] = useState([]);
   const [selectedBreachId, setSelectedBreachId] = useState(null);
-
+  
   const handleRowClick = (params) => {
     const rowData = params.row;
     console.log("Clicked row data:", rowData);
@@ -61,6 +62,8 @@ const Team = () => {
   };
 
   useEffect(() => {
+
+    // Retrives all worker's information through API from workers colelction
     axios
       .get(`${URL}/api/${projectId}/all_workers`)
       .then((workersResponse) => {
@@ -69,12 +72,13 @@ const Team = () => {
         // Create an array of unique names
         const names = [...new Set(workersData.map((worker) => worker.name))];
         setUniqueNames(names);
-
+        
+        // Retrives breach data through API from db_breaches collection
         axios
           .get(`${URL}/api/${projectId}/indiv_breaches`)
           .then((breachesResponse) => {
             const breachesData = JSON.parse(breachesResponse.data);
-
+            
             const breaches = [...new Set(breachesData.map((breach) => breach.description))];
             setUniqueBreaches(breaches);
 
@@ -124,6 +128,7 @@ const Team = () => {
       });
   }, []);
 
+  // Automatically updating the filtered list whenever the selected filters change
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
@@ -181,6 +186,8 @@ const Team = () => {
     return `${year}-${month}-${day}`;
   };
 
+  // Handling user input when the user selects names or breach types in the filter, and then updating the list of displayed workers accordingly.
+  // Can comment out the codes below as it is not being used.
   const handleFilterChange = (event, selectedValues) => {
 
     setSelectedFilter(selectedValues);
