@@ -91,14 +91,14 @@ const ChatMessageBox = () => {
               width: '200',
             }}
           >
-            <Typography
-              variant="body1"
+            <div
               style={{
+                whiteSpace: 'pre-line',
                 color: message.sender === 'user' ? '#fff' : colors.blueAccent[700],
               }}
             >
               {message.text}
-            </Typography>
+            </div>
           </Paper>
         ))}
       </div>
