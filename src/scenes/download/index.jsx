@@ -27,15 +27,9 @@ const Download = () => {
     setShowDropdowns(true);
 
     // Get the start and end date values from the input fields
-    const startDate = new Date(document.getElementById('Start').value);
-    const endDate = new Date(document.getElementById('End').value);
-
-    // Calculate the difference in days between the start and end dates
-    const timeDiff = Math.abs(endDate.getTime() - startDate.getTime());
-    const days = Math.ceil(timeDiff / (1000 * 3600 * 24));
-
-    // Send a request to the server endpoint responsible for generating and serving the PDF
-    const url = `${URL}/download_pdf?report_type=${reportType}&days=${days}&project_id=${projectId}`;
+    const startDate = new Date(document.getElementById('Start').value).toISOString();
+    const endDate = new Date(document.getElementById('End').value).toISOString();
+    const url = `${URL}/download_pdf?report_type=${reportType}&start=${startDate}&end=${endDate}&project_id=${projectId}`;
 
     axios
       .get(url, { responseType: 'blob' })
