@@ -1,7 +1,8 @@
 import React, { useState, useContext } from 'react';
-import { Button, Dialog, DialogTitle, DialogContent, DialogActions, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { Button, Dialog, DialogTitle, DialogContent, DialogActions, FormControl, InputLabel, Select, MenuItem, useTheme } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import ProjectContext from '../../context/ProjectContext';
+import { tokens } from "../../theme";
 
 const ProjectModal = () => {
   const { updateProjectId } = useContext(ProjectContext);
@@ -9,6 +10,10 @@ const ProjectModal = () => {
 
   const [open, setOpen] = useState(true);
   const [selectedProject, setSelectedProject] = useState('');
+
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
+
 
   const projectOptions = [
     { id: 1, name: 'Site A' },
@@ -49,17 +54,17 @@ const ProjectModal = () => {
 
   return (
     <div>
-      <Button onClick={handleOpen}>Open Modal</Button>
-      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-        <DialogTitle>Select a Site</DialogTitle>
-        <DialogContent>
-          <FormControl fullWidth>
+      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth >
+        <DialogTitle  sx={{bgcolor:colors.primary[400]}}>Select a Site</DialogTitle>
+        <DialogContent  sx={{bgcolor: colors.primary[400]}}>
+          <FormControl fullWidth >
             <InputLabel id="project-label">Site</InputLabel>
             <Select
               labelId="project-label"
               id="project-select"
               value={selectedProject}
               onChange={handleProjectChange}
+              style={{backgroundColor: colors.primary[400]}}
             >
               <MenuItem value="">Select a Site</MenuItem>
               {projectOptions.map((project) => (
@@ -70,8 +75,8 @@ const ProjectModal = () => {
             </Select>
           </FormControl>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleSave} disabled={selectedProject === ''}>
+        <DialogActions  sx={{bgcolor: colors.primary[400]}}>
+          <Button onClick={handleSave} disabled={selectedProject === ''} sx={{bgcolor: colors.blueAccent[700], color: colors.primary[600]}}>
             Save
           </Button>
         </DialogActions>

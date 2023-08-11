@@ -15,7 +15,7 @@ const AiAssistant = () => {
 
   useEffect(() => {
     // Simulating loading messages from an API or delay before displaying
-    if(botAnswer != null){
+    if (botAnswer != null) {
       setMessages([...messages, { text: botAnswer, sender: 'bot' }]);
     }
     setShowChat(true);
@@ -77,14 +77,14 @@ const AiAssistant = () => {
               width: '200',
             }}
           >
-            <Typography
-              variant="body1"
+            <div
               style={{
+                whiteSpace: 'pre-line',
                 color: message.sender === 'user' ? '#fff' : colors.blueAccent[700],
               }}
             >
               {message.text}
-            </Typography>
+            </div>
           </Paper>
         ))}
       </div>
