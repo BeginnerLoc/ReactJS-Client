@@ -287,7 +287,7 @@ const Dashboard = () => {
           justifyContent="center"
         >
           <StatBox
-            title={deadlineCount}
+            title={0}
             subtitle="Days To Project Deadline"
             icon={
               <EventOutlinedIcon
